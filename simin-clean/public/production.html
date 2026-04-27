@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2c2c2c">
+<title>시민제과 생산기록</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e8e6df;
+  }
+  .header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+  .header .sub { font-size: 13px; color: #888; }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .label .req { color: #c0392b; margin-left: 2px; }
+  select, input[type=text], input[type=password], textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #fff;
+    color: #1a1a1a;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+  }
+  textarea { min-height: 100px; resize: vertical; }
+  textarea::placeholder, input::placeholder { color: #aaa; }
+  .seg {
+    display: flex;
+    gap: 8px;
+  }
+  .seg button {
+    flex: 1;
+    padding: 14px 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .seg button.active {
+    background: #2c2c2c;
+    color: #fff;
+    border-color: #2c2c2c;
+  }
+  .checks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .checks label {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    background: #fff;
+  }
+  .checks label.checked {
+    background: #2c2c2c;
+    color: #fff;
+    border-color: #2c2c2c;
+  }
+  .checks input { margin-right: 8px; accent-color: #2c2c2c; }
+  .checks label.checked input { accent-color: #fff; }
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: #2c2c2c;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+  }
+  .btn-primary:disabled { opacity: 0.4; }
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: #888;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 12px;
+    font-family: inherit;
+  }
+  .row { margin-bottom: 16px; }
+  .row:last-child { margin-bottom: 0; }
+  .user-bar {
+    background: #2c2c2c;
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .user-bar .who { font-weight: 600; }
+  .user-bar .logout {
+    color: #ccc;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.error { background: #c0392b; }
+  .hidden { display: none !important; }
+  .hint { font-size: 12px; color: #999; margin-top: 6px; }
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #2c2c2c;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🍞 시민제과 생산기록</h1>
+    <div class="sub">하루 2회 작성 · 점심 전 / 퇴근 전</div>
+  </div>
+
+  <!-- 로그인 화면 -->
+  <div id="loginView">
+    <div class="card">
+      <div class="row">
+        <label class="label">이름 <span class="req">*</span></label>
+        <select id="loginName">
+          <option value="">선택해주세요</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="label">PIN (4자리) <span class="req">*</span></label>
+        <input type="password" id="loginPin" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••">
+      </div>
+      <button class="btn-primary" id="loginBtn">로그인</button>
+    </div>
+  </div>
+
+  <!-- 입력 폼 화면 -->
+  <div id="formView" class="hidden">
+    <div class="user-bar">
+      <span class="who" id="userWho">—</span>
+      <button class="logout" id="logoutBtn">다른 계정</button>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label class="label">매장</label>
+        <div class="seg" id="storeSeg">
+          <button data-val="본점">본점</button>
+          <button data-val="효자점">효자점</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label">층 / 구역</label>
+        <div class="seg" id="floorSeg"></div>
+      </div>
+
+      <div class="row">
+        <label class="label">시간대</label>
+        <div class="seg" id="periodSeg">
+          <button data-val="오전">오전 (점심 전)</button>
+          <button data-val="오후">오후 (퇴근 전)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label class="label">이번 시간대 한 작업 <span class="req">*</span></label>
+        <textarea id="work" placeholder="예) 찹쌀떡 500개&#10;단팥빵 반죽 30kg&#10;소금빵 성형 200개"></textarea>
+        <div class="hint">본인이 평소 쓰는 용어 그대로 적으면 됩니다</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label class="label">폐기 내용</label>
+        <textarea id="waste" placeholder="없으면 비워두세요&#10;예) 단팥빵 12개, 크로와상 반죽 2kg"></textarea>
+      </div>
+      <div class="row">
+        <label class="label">폐기 사유 (해당되는 것 모두)</label>
+        <div class="checks" id="reasonChecks">
+          <label><input type="checkbox" value="발효실패"><span>발효실패</span></label>
+          <label><input type="checkbox" value="성형불량"><span>성형불량</span></label>
+          <label><input type="checkbox" value="굽기실패"><span>굽기실패</span></label>
+          <label><input type="checkbox" value="계량실수"><span>계량실수</span></label>
+          <label><input type="checkbox" value="기타"><span>기타</span></label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="submitBtn">기록 완료</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="loading-overlay hidden" id="loadingOverlay"><div class="spinner"></div></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKJWb8Ye5Pr94BzU-b5Vr0mbU9c-dj3Mj8h-T_TFROKzfAl5_XErJqgwsDfzhyY2ms/exec';
+
+const FLOOR_OPTIONS = {
+  '본점': ['2층', '3층', '4층'],
+  '효자점': ['생산실']
+};
+
+let currentUser = null; // { name, store, defaultFloor }
+let selected = { store: null, floor: null, period: null };
+
+// === Helpers ===
+function $(id) { return document.getElementById(id); }
+function show(id) { $(id).classList.remove('hidden'); }
+function hide(id) { $(id).classList.add('hidden'); }
+function showLoading() { show('loadingOverlay'); }
+function hideLoading() { hide('loadingOverlay'); }
+
+function toast(msg, isError) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => { t.className = 'toast'; }, 2500);
+}
+
+async function api(payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  });
+  return res.json();
+}
+
+// === Init: 직원명단 불러오기 ===
+async function loadStaffList() {
+  showLoading();
+  try {
+    const res = await api({ action: 'getStaffList' });
+    if (res.ok) {
+      const sel = $('loginName');
+      res.list.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.name;
+        opt.textContent = s.name + ' (' + s.store + ')';
+        sel.appendChild(opt);
+      });
+    } else {
+      toast('명단 불러오기 실패', true);
+    }
+  } catch (e) {
+    toast('네트워크 오류', true);
+  } finally {
+    hideLoading();
+  }
+}
+
+// === 로그인 ===
+async function doLogin() {
+  const name = $('loginName').value;
+  const pin = $('loginPin').value;
+  if (!name) { toast('이름을 선택해주세요', true); return; }
+  if (!/^\d{4}$/.test(pin)) { toast('PIN 4자리를 입력해주세요', true); return; }
+
+  showLoading();
+  try {
+    const res = await api({ action: 'login', name, pin });
+    if (res.ok) {
+      currentUser = { name: res.name, store: res.store, defaultFloor: res.defaultFloor };
+      localStorage.setItem('simin_user', JSON.stringify(currentUser));
+      enterForm();
+    } else {
+      toast(res.error || '로그인 실패', true);
+    }
+  } catch (e) {
+    toast('네트워크 오류', true);
+  } finally {
+    hideLoading();
+  }
+}
+
+// === 폼 진입 ===
+function enterForm() {
+  hide('loginView');
+  show('formView');
+  $('userWho').textContent = currentUser.name + ' · ' + currentUser.store;
+
+  // 매장 기본 선택
+  selected.store = currentUser.store;
+  renderStoreSeg();
+  renderFloorSeg();
+
+  // 층 기본 선택
+  const floors = FLOOR_OPTIONS[currentUser.store] || [];
+  if (floors.includes(currentUser.defaultFloor)) {
+    selected.floor = currentUser.defaultFloor;
+  } else {
+    selected.floor = floors[0] || null;
+  }
+  renderFloorSeg();
+
+  // 시간대 자동 (14시 기준)
+  const hour = new Date().getHours();
+  selected.period = hour < 14 ? '오전' : '오후';
+  renderPeriodSeg();
+}
+
+function renderStoreSeg() {
+  document.querySelectorAll('#storeSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === selected.store);
+  });
+}
+
+function renderFloorSeg() {
+  const seg = $('floorSeg');
+  seg.innerHTML = '';
+  const floors = FLOOR_OPTIONS[selected.store] || [];
+  floors.forEach(f => {
+    const b = document.createElement('button');
+    b.dataset.val = f;
+    b.textContent = f;
+    if (f === selected.floor) b.classList.add('active');
+    b.onclick = () => { selected.floor = f; renderFloorSeg(); };
+    seg.appendChild(b);
+  });
+}
+
+function renderPeriodSeg() {
+  document.querySelectorAll('#periodSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === selected.period);
+  });
+}
+
+// === 제출 ===
+async function doSubmit() {
+  if (!selected.store || !selected.floor || !selected.period) {
+    toast('매장/층/시간대를 모두 선택해주세요', true); return;
+  }
+  const work = $('work').value.trim();
+  if (!work) { toast('작업 내용을 입력해주세요', true); return; }
+
+  const waste = $('waste').value.trim();
+  const reasons = Array.from(document.querySelectorAll('#reasonChecks input:checked'))
+    .map(i => i.value).join(', ');
+
+  showLoading();
+  try {
+    const res = await api({
+      action: 'submit',
+      name: currentUser.name,
+      store: selected.store,
+      floor: selected.floor,
+      period: selected.period,
+      work, waste, wasteReasons: reasons
+    });
+    if (res.ok) {
+      toast('✓ 기록 완료');
+      // 폼 리셋 (로그인은 유지)
+      $('work').value = '';
+      $('waste').value = '';
+      document.querySelectorAll('#reasonChecks input').forEach(i => {
+        i.checked = false;
+        i.closest('label').classList.remove('checked');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      toast(res.error || '저장 실패', true);
+    }
+  } catch (e) {
+    toast('네트워크 오류', true);
+  } finally {
+    hideLoading();
+  }
+}
+
+// === Event bindings ===
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadStaffList();
+
+  // 저장된 로그인 복원
+  const saved = localStorage.getItem('simin_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      enterForm();
+    } catch (e) { /* ignore */ }
+  }
+
+  $('loginBtn').onclick = doLogin;
+  $('loginPin').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+
+  $('logoutBtn').onclick = () => {
+    if (!confirm('로그아웃 하시겠어요?')) return;
+    localStorage.removeItem('simin_user');
+    currentUser = null;
+    selected = { store: null, floor: null, period: null };
+    $('loginName').value = '';
+    $('loginPin').value = '';
+    hide('formView');
+    show('loginView');
+  };
+
+  // 매장 토글
+  document.querySelectorAll('#storeSeg button').forEach(b => {
+    b.onclick = () => {
+      selected.store = b.dataset.val;
+      // 매장 바뀌면 층도 첫번째로 리셋
+      const floors = FLOOR_OPTIONS[selected.store] || [];
+      selected.floor = floors[0] || null;
+      renderStoreSeg();
+      renderFloorSeg();
+    };
+  });
+
+  // 시간대 토글
+  document.querySelectorAll('#periodSeg button').forEach(b => {
+    b.onclick = () => { selected.period = b.dataset.val; renderPeriodSeg(); };
+  });
+
+  // 폐기 사유 체크 시각 효과
+  document.querySelectorAll('#reasonChecks input').forEach(input => {
+    input.addEventListener('change', () => {
+      input.closest('label').classList.toggle('checked', input.checked);
+    });
+  });
+
+  $('submitBtn').onclick = doSubmit;
+});
+</script>
+
+</body>
+</html>
