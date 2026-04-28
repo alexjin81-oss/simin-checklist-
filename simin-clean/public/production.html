@@ -17,177 +17,152 @@
     font-size: 16px;
     line-height: 1.4;
   }
-  .container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 20px 40px;
-  }
-  .header {
-    text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e8e6df;
-  }
+  .container { max-width: 480px; margin: 0 auto; padding: 24px 20px 60px; }
+  .header { text-align: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e6df; }
   .header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
   .header .sub { font-size: 13px; color: #888; }
-  .card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  }
-  .label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #555;
-    margin-bottom: 8px;
-    display: block;
-  }
+  .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; display: block; }
   .label .req { color: #c0392b; margin-left: 2px; }
   select, input[type=text], input[type=password], textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: inherit;
-    background: #fff;
-    color: #1a1a1a;
-    -webkit-appearance: none;
-    appearance: none;
+    width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 12px;
+    font-size: 16px; font-family: inherit; background: #fff; color: #1a1a1a;
+    -webkit-appearance: none; appearance: none;
   }
   select {
     background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
+    background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px;
   }
   textarea { min-height: 100px; resize: vertical; }
   textarea::placeholder, input::placeholder { color: #aaa; }
-  .seg {
-    display: flex;
-    gap: 8px;
-  }
+  .seg { display: flex; gap: 8px; }
   .seg button {
-    flex: 1;
-    padding: 14px 8px;
-    border: 1px solid #ddd;
-    background: #fff;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    font-family: inherit;
+    flex: 1; padding: 14px 8px; border: 1px solid #ddd; background: #fff;
+    border-radius: 12px; font-size: 15px; font-weight: 500; color: #555;
+    cursor: pointer; font-family: inherit;
   }
-  .seg button.active {
-    background: #2c2c2c;
-    color: #fff;
-    border-color: #2c2c2c;
-  }
-  .checks {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
+  .seg button.active { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+  .checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .checks label {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    background: #fff;
+    display: flex; align-items: center; padding: 12px; border: 1px solid #ddd;
+    border-radius: 10px; cursor: pointer; font-size: 14px; background: #fff;
   }
-  .checks label.checked {
-    background: #2c2c2c;
-    color: #fff;
-    border-color: #2c2c2c;
-  }
+  .checks label.checked { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
   .checks input { margin-right: 8px; accent-color: #2c2c2c; }
   .checks label.checked input { accent-color: #fff; }
   .btn-primary {
-    width: 100%;
-    padding: 16px;
-    background: #2c2c2c;
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    margin-top: 8px;
+    width: 100%; padding: 16px; background: #2c2c2c; color: #fff; border: none;
+    border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer;
+    font-family: inherit; margin-top: 8px;
   }
   .btn-primary:disabled { opacity: 0.4; }
-  .btn-secondary {
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    color: #888;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 12px;
-    font-family: inherit;
-  }
   .row { margin-bottom: 16px; }
   .row:last-child { margin-bottom: 0; }
   .user-bar {
-    background: #2c2c2c;
-    color: #fff;
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
+    background: #2c2c2c; color: #fff; border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 16px; display: flex; justify-content: space-between;
+    align-items: center; font-size: 14px;
   }
   .user-bar .who { font-weight: 600; }
   .user-bar .logout {
-    color: #ccc;
-    background: transparent;
-    border: none;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 4px 8px;
+    color: #ccc; background: transparent; border: none; font-size: 13px;
+    cursor: pointer; padding: 4px 8px;
   }
   .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a1a1a;
-    color: #fff;
-    padding: 14px 24px;
-    border-radius: 30px;
-    font-size: 14px;
-    z-index: 100;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #1a1a1a; color: #fff; padding: 14px 24px; border-radius: 30px;
+    font-size: 14px; z-index: 100; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; max-width: 90%; text-align: center;
   }
   .toast.show { opacity: 1; }
   .toast.error { background: #c0392b; }
   .hidden { display: none !important; }
   .hint { font-size: 12px; color: #999; margin-top: 6px; }
   .loading-overlay {
-    position: fixed; inset: 0;
-    background: rgba(255,255,255,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200;
+    position: fixed; inset: 0; background: rgba(255,255,255,0.7);
+    display: flex; align-items: center; justify-content: center; z-index: 200;
   }
   .spinner {
-    width: 32px; height: 32px;
-    border: 3px solid #e0e0e0;
-    border-top-color: #2c2c2c;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 32px; height: 32px; border: 3px solid #e0e0e0;
+    border-top-color: #2c2c2c; border-radius: 50%; animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  .main-tabs {
+    display: flex; background: #e8e6df; border-radius: 14px; padding: 4px; margin-bottom: 16px;
+  }
+  .main-tabs button {
+    flex: 1; padding: 12px 8px; border: none; background: transparent;
+    border-radius: 10px; font-size: 14px; font-weight: 600; color: #888;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .main-tabs button.active {
+    background: #fff; color: #1a1a1a; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  .summary-card {
+    background: #2c2c2c; color: #fff; border-radius: 16px;
+    padding: 16px 18px; margin-bottom: 12px;
+  }
+  .summary-card .total { font-size: 13px; color: #ccc; margin-bottom: 4px; }
+  .summary-card .count { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+  .summary-card .reasons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .summary-card .pill {
+    background: rgba(255,255,255,0.15); padding: 4px 10px;
+    border-radius: 20px; font-size: 12px;
+  }
+  .summary-card .empty { color: #999; font-size: 13px; }
+
+  .filter-row {
+    display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto;
+    padding-bottom: 4px; -webkit-overflow-scrolling: touch;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-row button {
+    flex-shrink: 0; padding: 8px 14px; border: 1px solid #ddd; background: #fff;
+    border-radius: 20px; font-size: 13px; color: #555; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+  }
+  .filter-row button.active { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+
+  .record-card {
+    background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .record-card.has-waste { border-left: 3px solid #c0392b; }
+  .record-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 12px; color: #888;
+  }
+  .record-meta .who { font-weight: 600; color: #1a1a1a; font-size: 13px; }
+  .record-meta .tags { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .record-meta .tag {
+    background: #f0eee8; color: #666; padding: 2px 8px;
+    border-radius: 10px; font-size: 11px;
+  }
+  .record-meta .tag.period { background: #e8e6df; }
+  .record-meta .time { color: #aaa; font-size: 11px; }
+  .record-section { margin-top: 8px; }
+  .record-section .sec-label {
+    font-size: 11px; color: #888; font-weight: 600; margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .record-section .sec-content {
+    font-size: 14px; color: #1a1a1a; white-space: pre-wrap; line-height: 1.5;
+  }
+  .record-section.waste .sec-label { color: #c0392b; }
+  .waste-reasons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .waste-reasons .reason {
+    background: #fdebea; color: #c0392b; padding: 3px 9px;
+    border-radius: 10px; font-size: 11px; font-weight: 500;
+  }
+  .empty-state { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+  .empty-state .icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+  .refresh-btn {
+    width: 100%; padding: 12px; background: transparent; border: 1px dashed #ccc;
+    border-radius: 12px; color: #888; font-size: 13px; cursor: pointer;
+    font-family: inherit; margin-top: 8px;
+  }
 </style>
 </head>
 <body>
@@ -198,14 +173,11 @@
     <div class="sub">하루 2회 작성 · 점심 전 / 퇴근 전</div>
   </div>
 
-  <!-- 로그인 화면 -->
   <div id="loginView">
     <div class="card">
       <div class="row">
         <label class="label">이름 <span class="req">*</span></label>
-        <select id="loginName">
-          <option value="">선택해주세요</option>
-        </select>
+        <select id="loginName"><option value="">선택해주세요</option></select>
       </div>
       <div class="row">
         <label class="label">PIN (4자리) <span class="req">*</span></label>
@@ -215,62 +187,94 @@
     </div>
   </div>
 
-  <!-- 입력 폼 화면 -->
-  <div id="formView" class="hidden">
+  <div id="mainView" class="hidden">
     <div class="user-bar">
       <span class="who" id="userWho">—</span>
       <button class="logout" id="logoutBtn">다른 계정</button>
     </div>
 
-    <div class="card">
-      <div class="row">
-        <label class="label">매장</label>
-        <div class="seg" id="storeSeg">
-          <button data-val="본점">본점</button>
-          <button data-val="효자점">효자점</button>
+    <div class="main-tabs">
+      <button data-tab="input" class="active" id="tabInput">✏️ 기록 입력</button>
+      <button data-tab="view" id="tabView">📊 기록 보기</button>
+    </div>
+
+    <div id="inputPane">
+      <div class="card">
+        <div class="row">
+          <label class="label">매장</label>
+          <div class="seg" id="storeSeg">
+            <button data-val="본점">본점</button>
+            <button data-val="효자점">효자점</button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="label">층 / 구역</label>
+          <div class="seg" id="floorSeg"></div>
+        </div>
+        <div class="row">
+          <label class="label">시간대</label>
+          <div class="seg" id="periodSeg">
+            <button data-val="오전">오전 (점심 전)</button>
+            <button data-val="오후">오후 (퇴근 전)</button>
+          </div>
         </div>
       </div>
 
-      <div class="row">
-        <label class="label">층 / 구역</label>
-        <div class="seg" id="floorSeg"></div>
-      </div>
-
-      <div class="row">
-        <label class="label">시간대</label>
-        <div class="seg" id="periodSeg">
-          <button data-val="오전">오전 (점심 전)</button>
-          <button data-val="오후">오후 (퇴근 전)</button>
+      <div class="card">
+        <div class="row">
+          <label class="label">이번 시간대 한 작업 <span class="req">*</span></label>
+          <textarea id="work" placeholder="예) 찹쌀떡 500개&#10;단팥빵 반죽 30kg&#10;소금빵 성형 200개"></textarea>
+          <div class="hint">본인이 평소 쓰는 용어 그대로 적으면 됩니다</div>
         </div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="row">
-        <label class="label">이번 시간대 한 작업 <span class="req">*</span></label>
-        <textarea id="work" placeholder="예) 찹쌀떡 500개&#10;단팥빵 반죽 30kg&#10;소금빵 성형 200개"></textarea>
-        <div class="hint">본인이 평소 쓰는 용어 그대로 적으면 됩니다</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="row">
-        <label class="label">폐기 내용</label>
-        <textarea id="waste" placeholder="없으면 비워두세요&#10;예) 단팥빵 12개, 크로와상 반죽 2kg"></textarea>
-      </div>
-      <div class="row">
-        <label class="label">폐기 사유 (해당되는 것 모두)</label>
-        <div class="checks" id="reasonChecks">
-          <label><input type="checkbox" value="발효실패"><span>발효실패</span></label>
-          <label><input type="checkbox" value="성형불량"><span>성형불량</span></label>
-          <label><input type="checkbox" value="굽기실패"><span>굽기실패</span></label>
-          <label><input type="checkbox" value="계량실수"><span>계량실수</span></label>
-          <label><input type="checkbox" value="기타"><span>기타</span></label>
+      <div class="card">
+        <div class="row">
+          <label class="label">폐기 내용</label>
+          <textarea id="waste" placeholder="없으면 비워두세요&#10;예) 단팥빵 12개, 크로와상 반죽 2kg"></textarea>
+        </div>
+        <div class="row">
+          <label class="label">폐기 사유 (해당되는 것 모두)</label>
+          <div class="checks" id="reasonChecks">
+            <label><input type="checkbox" value="발효실패"><span>발효실패</span></label>
+            <label><input type="checkbox" value="성형불량"><span>성형불량</span></label>
+            <label><input type="checkbox" value="굽기실패"><span>굽기실패</span></label>
+            <label><input type="checkbox" value="계량실수"><span>계량실수</span></label>
+            <label><input type="checkbox" value="기타"><span>기타</span></label>
+          </div>
         </div>
       </div>
+
+      <button class="btn-primary" id="submitBtn">기록 완료</button>
     </div>
 
-    <button class="btn-primary" id="submitBtn">기록 완료</button>
+    <div id="viewPane" class="hidden">
+      <div class="filter-row" id="rangeFilter">
+        <button data-val="today" class="active">오늘</button>
+        <button data-val="yesterday">어제</button>
+        <button data-val="week">이번 주</button>
+      </div>
+
+      <div class="summary-card" id="summaryCard">
+        <div class="total" id="summaryTitle">오늘 작성</div>
+        <div class="count" id="summaryCount">—</div>
+        <div class="reasons" id="summaryReasons"></div>
+      </div>
+
+      <div class="filter-row" id="storeFilter">
+        <button data-val="all" class="active">전체 매장</button>
+        <button data-val="본점">본점</button>
+        <button data-val="효자점">효자점</button>
+      </div>
+
+      <div class="filter-row" id="floorFilter">
+        <button data-val="all" class="active">전체 층</button>
+      </div>
+
+      <div id="recordList"></div>
+
+      <button class="refresh-btn" id="refreshBtn">↻ 새로고침</button>
+    </div>
   </div>
 </div>
 
@@ -284,11 +288,12 @@ const FLOOR_OPTIONS = {
   '본점': ['2층', '3층', '4층'],
   '효자점': ['생산실']
 };
+const ALL_FLOORS = ['2층', '3층', '4층', '생산실'];
 
-let currentUser = null; // { name, store, defaultFloor }
+let currentUser = null;
 let selected = { store: null, floor: null, period: null };
+let viewState = { range: 'today', store: 'all', floor: 'all', records: [] };
 
-// === Helpers ===
 function $(id) { return document.getElementById(id); }
 function show(id) { $(id).classList.remove('hidden'); }
 function hide(id) { $(id).classList.add('hidden'); }
@@ -311,7 +316,13 @@ async function api(payload) {
   return res.json();
 }
 
-// === Init: 직원명단 불러오기 ===
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
 async function loadStaffList() {
   showLoading();
   try {
@@ -334,7 +345,6 @@ async function loadStaffList() {
   }
 }
 
-// === 로그인 ===
 async function doLogin() {
   const name = $('loginName').value;
   const pin = $('loginPin').value;
@@ -347,7 +357,7 @@ async function doLogin() {
     if (res.ok) {
       currentUser = { name: res.name, store: res.store, defaultFloor: res.defaultFloor };
       localStorage.setItem('simin_user', JSON.stringify(currentUser));
-      enterForm();
+      enterMain();
     } else {
       toast(res.error || '로그인 실패', true);
     }
@@ -358,18 +368,14 @@ async function doLogin() {
   }
 }
 
-// === 폼 진입 ===
-function enterForm() {
+function enterMain() {
   hide('loginView');
-  show('formView');
+  show('mainView');
   $('userWho').textContent = currentUser.name + ' · ' + currentUser.store;
 
-  // 매장 기본 선택
   selected.store = currentUser.store;
   renderStoreSeg();
-  renderFloorSeg();
-
-  // 층 기본 선택
+  
   const floors = FLOOR_OPTIONS[currentUser.store] || [];
   if (floors.includes(currentUser.defaultFloor)) {
     selected.floor = currentUser.defaultFloor;
@@ -378,7 +384,6 @@ function enterForm() {
   }
   renderFloorSeg();
 
-  // 시간대 자동 (14시 기준)
   const hour = new Date().getHours();
   selected.period = hour < 14 ? '오전' : '오후';
   renderPeriodSeg();
@@ -410,7 +415,6 @@ function renderPeriodSeg() {
   });
 }
 
-// === 제출 ===
 async function doSubmit() {
   if (!selected.store || !selected.floor || !selected.period) {
     toast('매장/층/시간대를 모두 선택해주세요', true); return;
@@ -425,16 +429,12 @@ async function doSubmit() {
   showLoading();
   try {
     const res = await api({
-      action: 'submit',
-      name: currentUser.name,
-      store: selected.store,
-      floor: selected.floor,
-      period: selected.period,
+      action: 'submit', name: currentUser.name,
+      store: selected.store, floor: selected.floor, period: selected.period,
       work, waste, wasteReasons: reasons
     });
     if (res.ok) {
       toast('✓ 기록 완료');
-      // 폼 리셋 (로그인은 유지)
       $('work').value = '';
       $('waste').value = '';
       document.querySelectorAll('#reasonChecks input').forEach(i => {
@@ -452,17 +452,157 @@ async function doSubmit() {
   }
 }
 
-// === Event bindings ===
+function switchTab(tab) {
+  document.querySelectorAll('.main-tabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  if (tab === 'input') {
+    show('inputPane'); hide('viewPane');
+  } else {
+    hide('inputPane'); show('viewPane');
+    loadRecords();
+  }
+}
+
+async function loadRecords() {
+  showLoading();
+  try {
+    const res = await api({ action: 'getRecords', range: viewState.range });
+    if (res.ok) {
+      viewState.records = res.records || [];
+      renderFloorFilterOptions();
+      renderRecords();
+    } else {
+      toast(res.error || '조회 실패', true);
+    }
+  } catch (e) {
+    toast('네트워크 오류', true);
+  } finally {
+    hideLoading();
+  }
+}
+
+function renderFloorFilterOptions() {
+  const floorsInData = new Set();
+  viewState.records.forEach(r => { if (r.floor) floorsInData.add(r.floor); });
+  
+  const ff = $('floorFilter');
+  ff.innerHTML = '<button data-val="all" class="' + 
+    (viewState.floor === 'all' ? 'active' : '') + '">전체 층</button>';
+  
+  ALL_FLOORS.forEach(f => {
+    if (floorsInData.has(f)) {
+      const b = document.createElement('button');
+      b.dataset.val = f;
+      b.textContent = f;
+      if (viewState.floor === f) b.classList.add('active');
+      ff.appendChild(b);
+    }
+  });
+  
+  ff.querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      viewState.floor = b.dataset.val;
+      renderFloorFilterOptions();
+      renderRecords();
+    };
+  });
+}
+
+function renderRecords() {
+  let filtered = viewState.records;
+  if (viewState.store !== 'all') {
+    filtered = filtered.filter(r => r.store === viewState.store);
+  }
+  if (viewState.floor !== 'all') {
+    filtered = filtered.filter(r => r.floor === viewState.floor);
+  }
+
+  const rangeLabel = { today: '오늘', yesterday: '어제', week: '이번 주' }[viewState.range];
+  $('summaryTitle').textContent = rangeLabel + ' 작성';
+  $('summaryCount').textContent = filtered.length + '건';
+
+  const reasonCount = {};
+  filtered.forEach(r => {
+    if (r.wasteReasons) {
+      r.wasteReasons.split(',').map(s => s.trim()).filter(Boolean).forEach(reason => {
+        reasonCount[reason] = (reasonCount[reason] || 0) + 1;
+      });
+    }
+  });
+
+  const reasonsEl = $('summaryReasons');
+  reasonsEl.innerHTML = '';
+  if (Object.keys(reasonCount).length === 0) {
+    reasonsEl.innerHTML = '<span class="empty">폐기 기록 없음</span>';
+  } else {
+    Object.entries(reasonCount)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([reason, count]) => {
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = reason + ' ' + count;
+        reasonsEl.appendChild(pill);
+      });
+  }
+
+  const list = $('recordList');
+  list.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>아직 기록이 없습니다</div>';
+    return;
+  }
+
+  filtered.forEach(r => {
+    const card = document.createElement('div');
+    const hasWaste = (r.waste && r.waste.trim()) || (r.wasteReasons && r.wasteReasons.trim());
+    card.className = 'record-card' + (hasWaste ? ' has-waste' : '');
+    
+    let html = '<div class="record-meta">' +
+      '<span class="who">' + escapeHtml(r.name) + '</span>' +
+      '<div class="tags">' +
+        '<span class="tag">' + escapeHtml(r.store) + ' · ' + escapeHtml(r.floor) + '</span>' +
+        '<span class="tag period">' + escapeHtml(r.period) + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="record-meta" style="margin-top:-4px;margin-bottom:8px;">' +
+      '<span class="time">' + escapeHtml(r.date) + ' ' + escapeHtml(r.timeStr || '') + '</span>' +
+    '</div>' +
+    '<div class="record-section">' +
+      '<div class="sec-label">작업</div>' +
+      '<div class="sec-content">' + escapeHtml(r.work) + '</div>' +
+    '</div>';
+    
+    if (hasWaste) {
+      html += '<div class="record-section waste"><div class="sec-label">폐기</div>';
+      if (r.waste && r.waste.trim()) {
+        html += '<div class="sec-content">' + escapeHtml(r.waste) + '</div>';
+      }
+      if (r.wasteReasons && r.wasteReasons.trim()) {
+        html += '<div class="waste-reasons">';
+        r.wasteReasons.split(',').map(s => s.trim()).filter(Boolean).forEach(reason => {
+          html += '<span class="reason">' + escapeHtml(reason) + '</span>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    
+    card.innerHTML = html;
+    list.appendChild(card);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadStaffList();
 
-  // 저장된 로그인 복원
   const saved = localStorage.getItem('simin_user');
   if (saved) {
     try {
       currentUser = JSON.parse(saved);
-      enterForm();
-    } catch (e) { /* ignore */ }
+      enterMain();
+    } catch (e) {}
   }
 
   $('loginBtn').onclick = doLogin;
@@ -475,15 +615,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     selected = { store: null, floor: null, period: null };
     $('loginName').value = '';
     $('loginPin').value = '';
-    hide('formView');
+    hide('mainView');
     show('loginView');
   };
 
-  // 매장 토글
   document.querySelectorAll('#storeSeg button').forEach(b => {
     b.onclick = () => {
       selected.store = b.dataset.val;
-      // 매장 바뀌면 층도 첫번째로 리셋
       const floors = FLOOR_OPTIONS[selected.store] || [];
       selected.floor = floors[0] || null;
       renderStoreSeg();
@@ -491,12 +629,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
   });
 
-  // 시간대 토글
   document.querySelectorAll('#periodSeg button').forEach(b => {
     b.onclick = () => { selected.period = b.dataset.val; renderPeriodSeg(); };
   });
 
-  // 폐기 사유 체크 시각 효과
   document.querySelectorAll('#reasonChecks input').forEach(input => {
     input.addEventListener('change', () => {
       input.closest('label').classList.toggle('checked', input.checked);
@@ -504,6 +640,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   $('submitBtn').onclick = doSubmit;
+
+  document.querySelectorAll('.main-tabs button').forEach(b => {
+    b.onclick = () => switchTab(b.dataset.tab);
+  });
+
+  document.querySelectorAll('#rangeFilter button').forEach(b => {
+    b.onclick = () => {
+      viewState.range = b.dataset.val;
+      document.querySelectorAll('#rangeFilter button').forEach(x => 
+        x.classList.toggle('active', x.dataset.val === viewState.range));
+      loadRecords();
+    };
+  });
+
+  document.querySelectorAll('#storeFilter button').forEach(b => {
+    b.onclick = () => {
+      viewState.store = b.dataset.val;
+      document.querySelectorAll('#storeFilter button').forEach(x => 
+        x.classList.toggle('active', x.dataset.val === viewState.store));
+      renderRecords();
+    };
+  });
+
+  $('refreshBtn').onclick = loadRecords;
 });
 </script>
 
