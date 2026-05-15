@@ -24,7 +24,7 @@
   .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
   .label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; display: block; }
   .label .req { color: #c0392b; margin-left: 2px; }
-  select, input[type=text], input[type=password], textarea {
+  select, input[type=text], input[type=password], input[type=number], textarea {
     width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 12px;
     font-size: 16px; font-family: inherit; background: #fff; color: #1a1a1a;
     -webkit-appearance: none; appearance: none;
@@ -149,6 +149,7 @@
   }
   .record-section .sec-content {
     font-size: 14px; color: #1a1a1a; white-space: pre-wrap; line-height: 1.5;
+    word-break: break-word;
   }
   .record-section.waste .sec-label { color: #c0392b; }
   .waste-reasons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
@@ -163,146 +164,78 @@
     border-radius: 12px; color: #888; font-size: 13px; cursor: pointer;
     font-family: inherit; margin-top: 8px;
   }
- /* ============================================
-   v2: 작업 카드 스타일
-   ============================================ */
-.work-card {
-  background: #f8f8f8;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-}
-.work-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.work-number {
-  font-weight: 600;
-  font-size: 14px;
-  color: #555;
-}
-.remove-btn {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0 8px;
-}
-.work-card select,
-.work-card input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-.qty-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 8px;
-}
-.qty-row input,
-.qty-row select {
-  margin-bottom: 0;
-}
-.add-btn {
-  width: 100%;
-  padding: 12px;
-  background: #fff;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  color: #666;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 4px;
-}
-.add-btn:hover {
-  background: #f5f5f5;
-  border-color: #999;
-}
-.note-hint {
-  font-size: 12px;
-  color: #f59e0b;
-  margin-top: -4px;
-  margin-bottom: 8px;
-}
-.work-line {
-  white-space: normal;
-  word-break: break-word;
-}
- /* ============================================
-   v2: 작업 카드 스타일
-   ============================================ */
-.work-card {
-  background: #f8f8f8;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-}
-.work-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.work-number {
-  font-weight: 600;
-  font-size: 14px;
-  color: #555;
-}
-.remove-btn {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0 8px;
-}
-.work-card select,
-.work-card input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-.qty-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 8px;
-}
-.qty-row input,
-.qty-row select {
-  margin-bottom: 0;
-}
-.add-btn {
-  width: 100%;
-  padding: 12px;
-  background: #fff;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  color: #666;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 4px;
-}
-.add-btn:hover {
-  background: #f5f5f5;
-  border-color: #999;
-}
-.note-hint {
-  font-size: 12px;
-  color: #f59e0b;
-  margin-top: -4px;
-  margin-bottom: 8px;
-}
+
+  /* ============================================
+     v2: 작업 카드 스타일
+     ============================================ */
+  .work-card {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .work-number {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+  }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 8px;
+    line-height: 1;
+  }
+  .work-card select,
+  .work-card input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    background-color: #fff;
+  }
+  .qty-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+  }
+  .qty-row input,
+  .qty-row select {
+    margin-bottom: 0;
+  }
+  .add-btn {
+    width: 100%;
+    padding: 12px;
+    background: #fff;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    color: #666;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 4px;
+    font-family: inherit;
+  }
+  .add-btn:hover {
+    background: #f5f5f5;
+    border-color: #999;
+  }
+  .note-hint {
+    font-size: 12px;
+    color: #f59e0b;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
 </style>
 </head>
 <body>
@@ -363,8 +296,9 @@
       <div class="card">
         <div class="row">
           <label class="label">이번 시간대 한 작업 <span class="req">*</span></label>
-          <textarea id="work" placeholder="예) 찹쌀떡 500개&#10;단팥빵 반죽 30kg&#10;소금빵 성형 200개"></textarea>
-          <div class="hint">본인이 평소 쓰는 용어 그대로 적으면 됩니다</div>
+          <div id="worksContainer"></div>
+          <button type="button" class="add-btn" id="addWorkBtn">+ 작업 추가</button>
+          <div class="hint">카테고리를 먼저 고른 다음, 작업을 선택하세요. 목록에 없으면 "직접 입력"을 사용하세요.</div>
         </div>
       </div>
 
@@ -430,7 +364,7 @@ const FLOOR_OPTIONS = {
 };
 const ALL_FLOORS = ['2층', '3층', '4층', '생산실'];
 
- // ============================================
+// ============================================
 // 작업 카탈로그 (v2)
 // ============================================
 const TASK_CATALOG = {
@@ -471,6 +405,7 @@ const NOTE_RECOMMENDED_CATEGORIES = ['페스츄리'];
 let currentUser = null;
 let selected = { store: null, floor: null, period: null };
 let viewState = { range: 'today', store: 'all', floor: 'all', records: [] };
+let workCounter = 0;
 
 function $(id) { return document.getElementById(id); }
 function show(id) { $(id).classList.remove('hidden'); }
@@ -501,6 +436,137 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// ============================================
+// 작업 카드 시스템 (v2)
+// ============================================
+function getCurrentFloorKey() {
+  // selected.store + selected.floor을 합쳐서 TASK_CATALOG 키로 변환
+  // 예: 본점 + 3층 → '본점 3층'
+  if (!selected.store || !selected.floor) return null;
+  return selected.store + ' ' + selected.floor;
+}
+
+function getCurrentFloorCategories() {
+  const key = getCurrentFloorKey();
+  if (!key || !TASK_CATALOG[key]) return ['직접 입력'];
+  return Object.keys(TASK_CATALOG[key]);
+}
+
+function addWork() {
+  workCounter++;
+  const container = $('worksContainer');
+  const card = document.createElement('div');
+  card.className = 'work-card';
+  card.dataset.workId = workCounter;
+
+  const categories = getCurrentFloorCategories();
+  const categoryOptions = categories.map(c => 
+    '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>'
+  ).join('');
+  const unitOptions = UNITS.map(u => '<option>' + u + '</option>').join('');
+
+  card.innerHTML = 
+    '<div class="work-header">' +
+      '<span class="work-number">작업 #' + workCounter + '</span>' +
+      '<button type="button" class="remove-btn" onclick="removeWork(this)">✕</button>' +
+    '</div>' +
+    '<select class="category-select" onchange="onCategoryChange(this)">' +
+      '<option value="">카테고리 선택</option>' +
+      categoryOptions +
+    '</select>' +
+    '<select class="task-select" style="display:none;">' +
+      '<option value="">작업 선택</option>' +
+    '</select>' +
+    '<input type="text" class="task-custom" style="display:none;" placeholder="작업명 직접 입력">' +
+    '<div class="qty-row">' +
+      '<input type="number" class="quantity" placeholder="수량" min="0" inputmode="numeric">' +
+      '<select class="unit">' + unitOptions + '</select>' +
+    '</div>' +
+    '<input type="text" class="note" placeholder="비고 (선택)">' +
+    '<div class="note-hint" style="display:none;">💡 페스츄리는 어느 단계까지 했는지 적어주세요 (예: 성형까지)</div>';
+
+  container.appendChild(card);
+}
+
+function removeWork(btn) {
+  btn.closest('.work-card').remove();
+}
+
+function onCategoryChange(selectEl) {
+  const card = selectEl.closest('.work-card');
+  const category = selectEl.value;
+  const floorKey = getCurrentFloorKey();
+
+  const taskSelect = card.querySelector('.task-select');
+  const taskCustom = card.querySelector('.task-custom');
+  const noteHint = card.querySelector('.note-hint');
+
+  // 초기화
+  taskSelect.style.display = 'none';
+  taskCustom.style.display = 'none';
+  noteHint.style.display = 'none';
+  taskSelect.innerHTML = '<option value="">작업 선택</option>';
+  taskCustom.value = '';
+
+  if (!category) return;
+
+  // "직접 입력" 카테고리
+  if (category === '직접 입력') {
+    taskCustom.style.display = 'block';
+    return;
+  }
+
+  // 일반 카테고리: 작업 목록 채우기
+  const tasks = (floorKey && TASK_CATALOG[floorKey] && TASK_CATALOG[floorKey][category]) || [];
+  taskSelect.innerHTML = '<option value="">작업 선택</option>' +
+    tasks.map(t => '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>').join('');
+  taskSelect.style.display = 'block';
+
+  // 페스츄리는 비고 힌트 표시
+  if (NOTE_RECOMMENDED_CATEGORIES.indexOf(category) !== -1) {
+    noteHint.style.display = 'block';
+  }
+}
+
+function buildWorkString() {
+  const cards = document.querySelectorAll('.work-card');
+  const lines = [];
+
+  cards.forEach(card => {
+    const category = card.querySelector('.category-select').value;
+    if (!category) return;
+
+    let task;
+    if (category === '직접 입력') {
+      task = card.querySelector('.task-custom').value.trim();
+    } else {
+      task = card.querySelector('.task-select').value;
+    }
+    if (!task) return;
+
+    const qty = card.querySelector('.quantity').value.trim();
+    const unit = card.querySelector('.unit').value;
+    const note = card.querySelector('.note').value.trim();
+
+    let line = '[' + category + '] ' + task;
+    if (qty) line += ' ' + qty + unit;
+    if (note) line += ' (' + note + ')';
+
+    lines.push(line);
+  });
+
+  return lines.join('\n');
+}
+
+function resetWorkForm() {
+  $('worksContainer').innerHTML = '';
+  workCounter = 0;
+  addWork();
+}
+
+// ============================================
+// 기존 로직 (v1 유지)
+// ============================================
 async function loadStaffList() {
   showLoading();
   try {
@@ -553,7 +619,7 @@ function enterMain() {
 
   selected.store = currentUser.store;
   renderStoreSeg();
-  
+
   const floors = FLOOR_OPTIONS[currentUser.store] || [];
   if (floors.includes(currentUser.defaultFloor)) {
     selected.floor = currentUser.defaultFloor;
@@ -565,6 +631,9 @@ function enterMain() {
   const hour = new Date().getHours();
   selected.period = hour < 14 ? '오전' : '오후';
   renderPeriodSeg();
+
+  // 작업 카드 초기화
+  resetWorkForm();
 }
 
 function renderStoreSeg() {
@@ -582,7 +651,12 @@ function renderFloorSeg() {
     b.dataset.val = f;
     b.textContent = f;
     if (f === selected.floor) b.classList.add('active');
-    b.onclick = () => { selected.floor = f; renderFloorSeg(); };
+    b.onclick = () => { 
+      selected.floor = f; 
+      renderFloorSeg();
+      // 층 바뀌면 카드 모두 리셋 (카테고리가 층별로 다르니까)
+      resetWorkForm();
+    };
     seg.appendChild(b);
   });
 }
@@ -597,8 +671,8 @@ async function doSubmit() {
   if (!selected.store || !selected.floor || !selected.period) {
     toast('매장/층/시간대를 모두 선택해주세요', true); return;
   }
-  const work = $('work').value.trim();
-  if (!work) { toast('작업 내용을 입력해주세요', true); return; }
+  const work = buildWorkString();
+  if (!work) { toast('작업을 1개 이상 입력해주세요', true); return; }
 
   const waste = $('waste').value.trim();
   const reasons = Array.from(document.querySelectorAll('#reasonChecks input:checked'))
@@ -613,7 +687,7 @@ async function doSubmit() {
     });
     if (res.ok) {
       toast('✓ 기록 완료');
-      $('work').value = '';
+      resetWorkForm();
       $('waste').value = '';
       document.querySelectorAll('#reasonChecks input').forEach(i => {
         i.checked = false;
@@ -663,11 +737,11 @@ async function loadRecords() {
 function renderFloorFilterOptions() {
   const floorsInData = new Set();
   viewState.records.forEach(r => { if (r.floor) floorsInData.add(r.floor); });
-  
+
   const ff = $('floorFilter');
-  ff.innerHTML = '<button data-val="all" class="' + 
+  ff.innerHTML = '<button data-val="all" class="' +
     (viewState.floor === 'all' ? 'active' : '') + '">전체 층</button>';
-  
+
   ALL_FLOORS.forEach(f => {
     if (floorsInData.has(f)) {
       const b = document.createElement('button');
@@ -677,7 +751,7 @@ function renderFloorFilterOptions() {
       ff.appendChild(b);
     }
   });
-  
+
   ff.querySelectorAll('button').forEach(b => {
     b.onclick = () => {
       viewState.floor = b.dataset.val;
@@ -726,7 +800,7 @@ function renderRecords() {
 
   const list = $('recordList');
   list.innerHTML = '';
-  
+
   if (filtered.length === 0) {
     list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>아직 기록이 없습니다</div>';
     return;
@@ -736,7 +810,7 @@ function renderRecords() {
     const card = document.createElement('div');
     const hasWaste = (r.waste && r.waste.trim()) || (r.wasteReasons && r.wasteReasons.trim());
     card.className = 'record-card' + (hasWaste ? ' has-waste' : '');
-    
+
     let html = '<div class="record-meta">' +
       '<span class="who">' + escapeHtml(r.name) + '</span>' +
       '<div class="tags">' +
@@ -751,7 +825,7 @@ function renderRecords() {
       '<div class="sec-label">작업</div>' +
       '<div class="sec-content">' + escapeHtml(r.work) + '</div>' +
     '</div>';
-    
+
     if (hasWaste) {
       html += '<div class="record-section waste"><div class="sec-label">폐기</div>';
       if (r.waste && r.waste.trim()) {
@@ -766,7 +840,7 @@ function renderRecords() {
       }
       html += '</div>';
     }
-    
+
     card.innerHTML = html;
     list.appendChild(card);
   });
@@ -804,6 +878,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       selected.floor = floors[0] || null;
       renderStoreSeg();
       renderFloorSeg();
+      resetWorkForm();
     };
   });
 
@@ -818,6 +893,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   $('submitBtn').onclick = doSubmit;
+  $('addWorkBtn').onclick = addWork;
 
   document.querySelectorAll('.main-tabs button').forEach(b => {
     b.onclick = () => switchTab(b.dataset.tab);
@@ -826,7 +902,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('#rangeFilter button').forEach(b => {
     b.onclick = () => {
       viewState.range = b.dataset.val;
-      document.querySelectorAll('#rangeFilter button').forEach(x => 
+      document.querySelectorAll('#rangeFilter button').forEach(x =>
         x.classList.toggle('active', x.dataset.val === viewState.range));
       loadRecords();
     };
@@ -835,7 +911,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('#storeFilter button').forEach(b => {
     b.onclick = () => {
       viewState.store = b.dataset.val;
-      document.querySelectorAll('#storeFilter button').forEach(x => 
+      document.querySelectorAll('#storeFilter button').forEach(x =>
         x.classList.toggle('active', x.dataset.val === viewState.store));
       renderRecords();
     };
