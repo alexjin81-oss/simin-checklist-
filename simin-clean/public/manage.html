@@ -347,6 +347,10 @@ const SUPERVISOR = [
       hint: '직원 기록 · 반죽 해동 일지',
       checks: ['워크인 냉동고 ① 정리·재고 확인', '워크인 냉동고 ② 정리·재고 확인'],
       memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+    { id: 'sq', label: '주요 제품 품질 확인', star: true,
+      hint: '오전 11시경 · 당일 핵심 제품 맛·상태 직접 확인',
+      checks: ['단팥빵', '찹쌀떡', '소금빵', '포항 마들렌', '효자 생산 제품'],
+      memo: '추가 확인 제품 · 이상 발견 시 (선택)' },
     { id: 's6', label: '핵심 자재 잔량', star: true,
       hint: '떨어지기 전 발주',
       nums: [
@@ -532,7 +536,17 @@ function toast(msg) {
   setTimeout(() => { t.className = 'toast'; }, 2200);
 }
 
+// 상무 PIN (변경하려면 이 숫자만 바꾸세요)
+const SUPERVISOR_PIN = '2024';
+
 async function enterRole(r) {
+  // 상무는 PIN 확인
+  if (r === 'supervisor') {
+    const input = prompt('상무 페이지 비밀번호를 입력하세요');
+    if (input === null) return;            // 취소
+    if (input !== SUPERVISOR_PIN) { toast('비밀번호가 올바르지 않습니다'); return; }
+  }
+
   role = r;
   checkState = {};
   invState = {};
@@ -832,12 +846,22 @@ async function submitForm() {
     if (missing.length > 0) { toast(`필수(★) 항목 ${missing.length}개가 남았어요`); return; }
 
     const g = id => $(id) ? $(id).value.trim() : '';
+    // 품질 확인: 체크된 품목 목록 + 메모
+    const qLabels = ['단팥빵','찹쌀떡','소금빵','포항 마들렌','효자 생산 제품'];
+    const qChecked = qLabels.filter((_, i) => checkState['sub-sq-sub' + i]);
+    const qMissing = qLabels.filter((_, i) => !checkState['sub-sq-sub' + i]);
+    let qualityText = qChecked.length ? '확인: ' + qChecked.join(', ') : '';
+    if (qMissing.length) qualityText += (qualityText ? ' / ' : '') + '미확인: ' + qMissing.join(', ');
+    const qmemo = g('memo-sq');
+    if (qmemo) qualityText += (qualityText ? ' / ' : '') + '메모: ' + qmemo;
+
     const data = {
       s1: !!checkState['s1'],
       s2: !!checkState['s2'],   s2memo: g('memo-s2'),
       wk2: !!checkState['sub-s3-sub0'], memo2: g('memo-s3'),
       wk3: !!(checkState['sub-s4-sub0'] && checkState['sub-s4-sub1']), memo3: g('memo-s4'),
       wk4: !!(checkState['sub-s5-sub0'] && checkState['sub-s5-sub1']), memo4: g('memo-s5'),
+      quality: !!checkState['sq'], qualitymemo: qualityText,
       bang: g('num-s6-bang'), ddeok: g('num-s6-ddeok'), butter: g('num-s6-butter'), cream: g('num-s6-cream'),
       hyg: !!checkState['shyg'], hygmemo: g('memo-shyg'),
       preorder: g('num-s8-preorder'), prememo: g('memo-s8'),
