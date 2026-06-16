@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>시민제과 관리 체크리스트 (프로토타입)</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+  :root {
+    --bg: #FBF6EE; --card: #FFFFFF; --ink: #3A2A1C; --sub: #9A8876;
+    --line: #ECE1D2; --crust: #C8682E; --golden: #E0A33A; --green: #5B8C5A;
+    --red: #C4453C; --redbg: #FBEDEB; --greenbg: #EDF4EC; --orange: #D98A2B;
+    --orangebg: #FBF0E2; --cream: #F4EADB; --amber: #B8841F;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--bg); color: var(--ink); min-height: 100vh;
+    font-size: 16px; line-height: 1.45;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  /* 헤더 */
+  .top { text-align: center; padding: 8px 0 16px; }
+  .top .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .top .date { font-size: 13px; color: var(--sub); margin-top: 2px; }
+  .badge {
+    display: inline-block; background: var(--crust); color: #fff;
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+    margin-top: 8px; letter-spacing: 0.3px;
+  }
+
+  /* 역할 선택 (프로토타입 전용) */
+  .role-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 4px; }
+  .role-pick button {
+    padding: 18px 10px; border: 2px solid var(--line); background: var(--card);
+    border-radius: 16px; font-size: 15px; font-weight: 700; color: var(--ink);
+    cursor: pointer; font-family: inherit; transition: all 0.15s; line-height: 1.3;
+  }
+  .role-pick button .emo { font-size: 26px; display: block; margin-bottom: 6px; }
+  .role-pick button .sub { font-size: 11px; color: var(--sub); font-weight: 500; display: block; margin-top: 2px; }
+  .role-pick button:active { transform: scale(0.97); }
+  .role-pick button.on { border-color: var(--crust); background: var(--orangebg); }
+
+  /* 진행률 바 */
+  .progress-wrap { margin: 14px 0; }
+  .progress-bar { height: 8px; background: var(--line); border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 10px; transition: width 0.3s; }
+  .progress-label { font-size: 12px; color: var(--sub); margin-top: 6px; text-align: right; }
+
+  /* 섹션 */
+  .section { margin-bottom: 18px; }
+  .section-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .section-head .ico { font-size: 18px; }
+  .section-head .title { font-size: 15px; font-weight: 800; }
+  .section-head .time { font-size: 12px; color: var(--sub); margin-left: auto; }
+
+  /* 체크 카드 */
+  .check-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 14px; margin-bottom: 10px; transition: all 0.15s;
+  }
+  .check-card.done { background: var(--greenbg); border-color: var(--green); }
+  .check-row { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+  .checkbox {
+    width: 26px; height: 26px; border: 2px solid var(--line); border-radius: 8px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; transition: all 0.15s; margin-top: 1px;
+  }
+  .check-card.done .checkbox { background: var(--green); border-color: var(--green); }
+  .check-label { flex: 1; }
+  .check-label .lbl { font-size: 15px; font-weight: 700; }
+  .check-label .star { color: var(--red); font-size: 13px; margin-left: 3px; }
+  .check-label .hint { font-size: 12.5px; color: var(--sub); margin-top: 3px; line-height: 1.4; }
+  .check-label .case {
+    font-size: 12px; color: var(--amber); margin-top: 5px; line-height: 1.4;
+    background: var(--orangebg); padding: 7px 9px; border-radius: 8px;
+  }
+
+  /* 숫자 입력 (자재 등) */
+  .num-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; padding-left: 38px; }
+  .num-item label { font-size: 12px; color: var(--sub); display: block; margin-bottom: 3px; }
+  .num-item input {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
+    font-size: 15px; font-family: inherit; background: #fff;
+  }
+  /* 메모 입력 */
+  .memo-box { margin-top: 12px; padding-left: 38px; }
+
+  /* 서브 체크 (워크인 등) */
+  .subchecks { margin-top: 10px; padding-left: 38px; }
+  .subcheck {
+    display: flex; align-items: center; gap: 9px; padding: 9px 11px;
+    background: #fff; border: 1px solid var(--line); border-radius: 9px;
+    margin-bottom: 6px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+  }
+  .subcheck.on { background: var(--greenbg); border-color: var(--green); }
+  .subcheck .sbox {
+    width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 6px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+  }
+  .subcheck.on .sbox { background: var(--green); border-color: var(--green); }
+  .memo-box textarea {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: #fff; min-height: 60px; resize: vertical;
+  }
+  /* 리더 작성 현황 (상무용) */
+  .floor-status { display: flex; gap: 8px; margin-top: 12px; padding-left: 38px; }
+  .floor-chip {
+    flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px;
+    font-size: 12px; font-weight: 700; border: 1px solid var(--line);
+  }
+  .floor-chip.ok { background: var(--greenbg); border-color: var(--green); color: var(--green); }
+  .floor-chip.no { background: var(--redbg); border-color: var(--red); color: var(--red); }
+
+  /* 리더 재고 입력 */
+  .inv-cat { margin-bottom: 16px; }
+  .inv-cat-title {
+    font-size: 13px; font-weight: 800; color: var(--crust); margin-bottom: 8px;
+    padding-bottom: 4px; border-bottom: 2px solid var(--cream);
+  }
+  .inv-row {
+    display: grid; grid-template-columns: 1fr 64px 56px; gap: 8px; align-items: center;
+    padding: 8px 10px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; margin-bottom: 6px;
+  }
+  .inv-row.alert { border-color: var(--red); background: var(--redbg); }
+  .inv-row .name { font-size: 14px; font-weight: 600; }
+  .inv-row .name .prev { font-size: 11px; color: var(--sub); font-weight: 400; display: block; }
+  .inv-row input {
+    width: 100%; padding: 8px 6px; border: 1px solid var(--line); border-radius: 7px;
+    font-size: 15px; text-align: center; font-family: inherit; background: #fff;
+  }
+  .inv-row .safe { font-size: 11px; color: var(--sub); text-align: center; }
+  .inv-row .badge-alert {
+    font-size: 10px; font-weight: 800; color: var(--red); text-align: center;
+  }
+  .inv-head {
+    display: grid; grid-template-columns: 1fr 64px 56px; gap: 8px;
+    font-size: 11px; color: var(--sub); font-weight: 700; padding: 0 10px 4px;
+  }
+  .inv-head div:not(:first-child) { text-align: center; }
+
+  .carry-note {
+    background: var(--cream); border-radius: 10px; padding: 10px 12px;
+    font-size: 12.5px; color: var(--ink); margin-bottom: 12px; line-height: 1.45;
+  }
+  .carry-note b { color: var(--crust); }
+
+  /* 품목 직접 추가 */
+  .extra-box { margin-top: 10px; }
+  .extra-row { display: grid; grid-template-columns: 1fr 80px 40px; gap: 8px; margin-bottom: 8px; }
+  .extra-row input {
+    padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: #fff;
+  }
+  .extra-row .del {
+    background: #fff; border: 1px solid var(--line); border-radius: 8px;
+    color: var(--sub); cursor: pointer; font-size: 16px;
+  }
+  .add-btn {
+    width: 100%; padding: 11px; background: #fff; border: 1.5px dashed var(--crust);
+    border-radius: 10px; color: var(--crust); font-size: 13.5px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .add-hint { font-size: 11.5px; color: var(--sub); margin-top: 7px; line-height: 1.4; }
+
+  /* 레옹기 일지 사진 (4F) */
+  .leon-box {
+    margin-top: 14px; background: #FFF6EE; border: 1.5px solid var(--golden);
+    border-radius: 14px; padding: 14px;
+  }
+  .leon-box .leon-title { font-size: 14px; font-weight: 800; color: var(--crust); margin-bottom: 4px; }
+  .leon-box .leon-sub { font-size: 12px; color: var(--sub); margin-bottom: 10px; line-height: 1.4; }
+  .leon-box input[type=file] { font-size: 13px; }
+  .leon-preview { margin-top: 10px; }
+  .leon-preview img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+
+  /* 제출 버튼 */
+  .submit-btn {
+    width: 100%; padding: 16px; background: var(--crust); color: #fff; border: none;
+    border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; margin-top: 8px; position: sticky; bottom: 16px;
+    box-shadow: 0 4px 16px rgba(200,104,46,0.3);
+  }
+  .submit-btn:active { transform: scale(0.99); }
+
+  .back-btn {
+    background: none; border: none; color: var(--sub); font-size: 14px;
+    cursor: pointer; font-family: inherit; padding: 4px 0; margin-bottom: 4px;
+  }
+  .hidden { display: none !important; }
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 14px 22px; border-radius: 30px;
+    font-size: 14px; z-index: 100; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; max-width: 90%; text-align: center; font-weight: 600;
+  }
+  .toast.show { opacity: 1; }
+  .proto-tag {
+    font-size: 11px; color: var(--sub); text-align: center; margin-top: 20px;
+    padding: 10px; border: 1px dashed var(--line); border-radius: 10px;
+  }
+
+  /* 대표 지시사항 박스 */
+  .notice-box {
+    background: linear-gradient(135deg, #3A2A1C, #5A4030);
+    color: #fff; border-radius: 16px; padding: 16px 18px; margin-bottom: 16px;
+    box-shadow: 0 3px 12px rgba(58,42,28,0.25);
+  }
+  .notice-box .notice-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--golden); margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .notice-box .notice-body { font-size: 15px; line-height: 1.5; white-space: pre-wrap; font-weight: 600; }
+  .notice-box .notice-date { font-size: 11px; color: #C8B8A8; margin-top: 8px; text-align: right; }
+  .notice-box.empty .notice-body { color: #B8A898; font-weight: 400; font-size: 13px; }
+
+  /* 대표 작성 화면 */
+  .ceo-edit { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .ceo-edit label { font-size: 13px; font-weight: 700; color: var(--ink); display: block; margin-bottom: 8px; }
+  .ceo-edit textarea {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+    font-size: 15px; font-family: inherit; background: #fff; min-height: 120px; resize: vertical;
+    line-height: 1.5;
+  }
+  .ceo-edit .ceo-hint { font-size: 12px; color: var(--sub); margin-top: 8px; line-height: 1.4; }
+
+  /* 🚧 런치 게이트 */
+  .gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(160deg, #3A2A1C, #5A4030);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .gate-card { text-align: center; color: #fff; max-width: 320px; }
+  .gate-emo { font-size: 56px; margin-bottom: 16px; }
+  .gate-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+  .gate-msg { font-size: 15px; line-height: 1.6; color: #E8DDD2; }
+  .gate-foot { font-size: 13px; color: var(--golden); margin-top: 28px; font-weight: 700; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<!-- 🚧 런치 게이트 (공개 전엔 이 화면만 보임) -->
+<div id="gate" class="gate hidden">
+  <div class="gate-card">
+    <div class="gate-emo">🚧</div>
+    <div class="gate-title">준비 중입니다</div>
+    <div class="gate-msg">곧 새로운 관리 시스템이 시작됩니다.<br>조금만 기다려 주세요.</div>
+    <div class="gate-foot">시민제과</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo">🍞 시민제과 관리</div>
+    <div class="date" id="dateLabel"></div>
+  </div>
+
+  <!-- 역할 선택 (프로토타입 전용 — 실제 앱에선 로그인으로 자동 분기) -->
+  <div id="roleView">
+    <div class="proto-tag" style="margin-top:0;margin-bottom:8px;">
+      프로토타입 — 실제 앱에선 로그인하면 역할에 따라 자동으로 화면이 열립니다
+    </div>
+    <div class="role-pick">
+      <button onclick="enterRole('ceo')">
+        <span class="emo">🧭</span>대표
+      </button>
+      <button onclick="enterRole('supervisor')">
+        <span class="emo">👔</span>상무
+      </button>
+      <button onclick="enterRole('2F')">
+        <span class="emo">🎂</span>2F 케이크실
+      </button>
+      <button onclick="enterRole('3F')">
+        <span class="emo">🍞</span>3F 생산실
+      </button>
+      <button onclick="enterRole('4F')">
+        <span class="emo">❄️</span>4F 냉동생지
+      </button>
+    </div>
+  </div>
+
+  <!-- 콘텐츠 영역 -->
+  <div id="contentView" class="hidden">
+    <button class="back-btn" onclick="goBack()">← 역할 다시 선택</button>
+    <div id="noticeSlot"></div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0 완료</div>
+    </div>
+    <div id="sections"></div>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">기록 완료</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+// 🚧 런치 게이트
+// ============================================
+// 6/9 상담에서 시행 발표 후, 아래를 true 로 바꾸고 저장하면 전 직원 공개됩니다.
+// 켜기 전에 미리 보려면 주소 뒤에 ?preview=1 을 붙이세요.
+//   예) https://simin-checklist.vercel.app/manage.html?preview=1
+const LAUNCHED = false;
+
+(function checkGate() {
+  const preview = new URLSearchParams(location.search).get('preview') === '1';
+  if (!LAUNCHED && !preview) {
+    document.addEventListener('DOMContentLoaded', () => {
+      const g = document.getElementById('gate');
+      if (g) g.classList.remove('hidden');
+      const w = document.querySelector('.wrap');
+      if (w) w.style.display = 'none';
+    });
+  }
+})();
+
+// ============================================
+// 데이터 정의
+// ============================================
+
+// 상무 체크리스트 (중립 hint만, 사례 제거)
+const SUPERVISOR = [
+  { id: 'am', title: '아침', ico: '🌅', time: '~09:00', items: [
+    { id: 's1', label: '조회 진행', star: true,
+      hint: '각 층 당일 작업 확인' },
+    { id: 's2', label: '전날 폐기 데이터 확인', star: true,
+      hint: '웹앱 기록에서 전날 폐기 확인 · 사유가 실제와 맞는지 점검',
+      memo: '폐기 관련 메모' },
+  ]},
+  { id: 'amround', title: '오전 라운딩', ico: '🥐', time: '~10:30', items: [
+    { id: 's3', label: '2F 케이크실', star: true,
+      hint: '직원 기록 · 당일 케이크 품질 · 사전예약 공유',
+      checks: ['워크인 냉동고(1) 정리·재고 확인'],
+      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+    { id: 's4', label: '3F 빵·떡', star: true,
+      hint: '직원 기록 · 떡·바게트 진행',
+      checks: ['워크인 냉동고(1) 정리·재고 확인', '워크인 냉장고(1) 정리·재고 확인'],
+      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+    { id: 's5', label: '4F 냉동생지', star: true,
+      hint: '직원 기록 · 반죽 해동 일지',
+      checks: ['워크인 냉동고 ① 정리·재고 확인', '워크인 냉동고 ② 정리·재고 확인'],
+      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+    { id: 's6', label: '핵심 자재 잔량', star: true,
+      hint: '떨어지기 전 발주',
+      nums: [
+        { k: 'bang', label: '빵앙금(박스)' }, { k: 'ddeok', label: '떡앙금(박스)' },
+        { k: 'butter', label: '버터(kg)' }, { k: 'cream', label: '생크림(통)' }
+      ] },
+  ]},
+  { id: 'mid', title: '수시 · 작업 중', ico: '☀️', time: '', items: [
+    { id: 's7', label: '리더 재고 보고 검수', star: true,
+      hint: '각 층 리더가 오늘 재고 입력했는지 확인',
+      floors: true },
+    { id: 'shyg', label: '공장 전체 위생 점검', star: true,
+      hint: '나방파리 · 바닥·트렌치 · 작업대 · 여름철 식자재 냉장',
+      memo: '오늘 본 위생 이슈 (선택)' },
+    { id: 's8', label: '사전예약 수량 확인',
+      hint: '시즌 예약 반영 여부',
+      nums: [{ k: 'preorder', label: '예약 수량' }],
+      memo: '⭐ 중요·대량 예약건 (날짜 · 품목 · 수량)\n예) 6/20 단체케이크 50개 / 6/25 답례품 찹쌀떡 300개' },
+  ]},
+  { id: 'pm', title: '오후 · 퇴근 전', ico: '🌙', time: '~17:00', items: [
+    { id: 's9', label: '익일 생산계획 확인', star: true,
+      hint: '3층 생산판 · 4층 주간 캘린더 · 사전예약 반영' },
+    { id: 's10', label: '효자점 마감 확인',
+      hint: '효자점 그날 기록 입력 · 폐기 여부' },
+    { id: 's11', label: '오늘 코멘트',
+      hint: '오늘의 이슈 정리 (선택)',
+      memo: '자유 기록' },
+  ]},
+];
+
+// 리더 재고 (층별) — 5/26 확정 품목. 전일 마감 재고 prefill
+const LEADER_INV = {
+  '2F': {
+    name: '케이크실', emo: '🎂', leon: false,
+    cats: [
+      { cat: '시트류', items: [
+        { k: 'wsm', name: '화이트시트 미니', safe: 100, prev: 155 },
+        { k: 'ws1', name: '화이트시트 1호', safe: 80, prev: 129 },
+        { k: 'ws2', name: '화이트시트 2호', safe: 30, prev: 36 },
+        { k: 'ws3', name: '화이트시트 3호', safe: 20, prev: 12 },
+        { k: 'cs1', name: '초코시트 1호', safe: 60, prev: 88 },
+        { k: 'cs2', name: '초코시트 2호', safe: 20, prev: 3 },
+        { k: 'cs3', name: '초코시트 3호', safe: 20, prev: 12 },
+        { k: 'moca', name: '모카시트', safe: 20, prev: 26 },
+        { k: 'or1', name: '오렌지시트 1호', safe: 15, prev: 20 },
+        { k: 'or2', name: '오렌지시트 2호', safe: 15, prev: 16 },
+        { k: 'chppi', name: '치즈쁘피', safe: 30, prev: 48 },
+      ]},
+      { cat: '케이크', items: [
+        { k: 'cheese', name: '치즈케이크', safe: 20, prev: 14 },
+        { k: 'tira', name: '티라미스', safe: 30, prev: 42 },
+        { k: 'mongmini', name: '몽미니', safe: 30, prev: 46 },
+        { k: 'oreo', name: '오레오', safe: 15, prev: 20 },
+        { k: 'kiri', name: '키리시', safe: 15, prev: 17 },
+        { k: 'carrot', name: '당근', safe: 25, prev: 31 },
+        { k: 'sttira', name: '딸기티라미스', safe: 30, prev: 47 },
+        { k: 'gomu', name: '고구마케이크', safe: 30, prev: 44 },
+      ]},
+      { cat: '구움과자·기타', items: [
+        { k: 'phmadeline', name: '포항마들렌', safe: 200, prev: 272 },
+        { k: 'egg', name: '에그타르트', safe: 50, prev: 59 },
+        { k: 'fruittart', name: '과일타르트', safe: 40, prev: 46 },
+        { k: 'milkroll', name: '우유롤', safe: 120, prev: 176 },
+        { k: 'riceroll', name: '쌀롤', safe: 20, prev: 18 },
+      ]},
+    ]
+  },
+  '3F': {
+    name: '생산실', emo: '🍞', leon: false,
+    cats: [
+      { cat: '도너츠', items: [
+        { k: 'sdonut', name: '생도너츠', safe: 100, prev: 120 },
+        { k: 'cdonut', name: '찹쌀도너츠', safe: 80, prev: 95 },
+      ]},
+      { cat: '만쥬', items: [
+        { k: 'bammanju', name: '밤만쥬', safe: 50, prev: 60 },
+        { k: 'wmmanju', name: '통밀만쥬', safe: 50, prev: 40 },
+        { k: 'pimanju', name: '파이만쥬', safe: 40, prev: 45 },
+        { k: 'himanju', name: '한입만쥬', safe: 50, prev: 55 },
+      ]},
+      { cat: '양갱', items: [
+        { k: 'gyanggaeng', name: '고구마양갱', safe: 30, prev: 35 },
+        { k: 'pyanggaeng', name: '팥양갱', safe: 30, prev: 28 },
+      ]},
+      { cat: '파베이크 바게트', items: [
+        { k: 'garlicb', name: '통마늘바게트', safe: 40, prev: 90 },
+        { k: 'yeonyub', name: '연유바게트', safe: 40, prev: 50 },
+        { k: 'myeongb', name: '명란바게트', safe: 40, prev: 45 },
+      ]},
+      { cat: '완제 냉동', items: [
+        { k: 'injcream', name: '인절미크림빵', safe: 60, prev: 80 },
+        { k: 'pdc', name: '팡드카카오', safe: 40, prev: 50 },
+      ]},
+      { cat: '굽기전 완제품', items: [
+        { k: 'cramsg', name: '크람사각', safe: 30, prev: 40 },
+        { k: 'garlics', name: '마늘스틱', safe: 30, prev: 25 },
+        { k: 'croque', name: '크로크무슈', safe: 30, prev: 35 },
+        { k: 'soboro', name: '소보로', safe: 40, prev: 60 },
+        { k: 'moka', name: '모카빵', safe: 40, prev: 42 },
+        { k: 'mochi', name: '모찌모찌', safe: 50, prev: 38 },
+        { k: 'mongblanc', name: '몽블랑', safe: 30, prev: 33 },
+        { k: 'saltb', name: '소금빵', safe: 70, prev: 85 },
+      ]},
+      { cat: '셰이크·앙금 (여름철 중요)', items: [
+        { k: 'shake', name: '셰이크(통)', safe: 12, prev: 15 },
+        { k: 'bangko', name: '빵앙금(박스)', safe: 5, prev: 4 },
+        { k: 'ddeokko', name: '떡앙금(박스)', safe: 5, prev: 6 },
+      ]},
+    ]
+  },
+  '4F': {
+    name: '냉동생지', emo: '❄️', leon: true,
+    cats: [
+      { cat: '냉동생지', items: [
+        { k: 'salt', name: '소금빵', safe: 200, prev: 250 },
+        { k: 'milk', name: '우유식빵', safe: 40, prev: 50 },
+        { k: 'corn', name: '옥수수식빵', safe: 30, prev: 35 },
+        { k: 'bam', name: '밤식빵', safe: 30, prev: 28 },
+        { k: 'wm', name: '통밀식빵', safe: 30, prev: 40 },
+        { k: 'grain', name: '곡물식빵', safe: 30, prev: 32 },
+        { k: 'tang', name: '탕종식빵', safe: 30, prev: 38 },
+        { k: 'gomushin', name: '검정고무신', safe: 40, prev: 45 },
+      ]},
+      { cat: '페스츄리 생지', items: [
+        { k: 'croissant', name: '크로와상', safe: 200, prev: 240 },
+        { k: 'pain', name: '뺑스위스', safe: 60, prev: 80 },
+        { k: 'minimong', name: '미니몽블랑', safe: 40, prev: 46 },
+        { k: 'giljuk', name: '길쭉이', safe: 40, prev: 50 },
+        { k: 'mong', name: '몽블랑', safe: 30, prev: 33 },
+        { k: 'denishbread', name: '데니쉬 식빵', safe: 30, prev: 28 },
+      ]},
+      { cat: '파이 생지', items: [
+        { k: 'pithivier', name: '피티비에', safe: 30, prev: 35 },
+        { k: 'applepie', name: '사과파이', safe: 30, prev: 40 },
+        { k: 'yeonyupie', name: '연유파이', safe: 30, prev: 25 },
+        { k: 'nougatpie', name: '누가파이', safe: 30, prev: 32 },
+        { k: 'pimanjupie', name: '파이만주', safe: 40, prev: 45 },
+        { k: 'bampie', name: '밤파이', safe: 30, prev: 28 },
+        { k: 'alligator', name: '엘리게이터', safe: 30, prev: 35 },
+        { k: 'almondstick', name: '아몬드스틱', safe: 30, prev: 30 },
+      ]},
+    ]
+  },
+};
+
+// ============================================
+// 서버 연동
+// ============================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpAdmY8x8Tu8x5YZupN5mE6tggOJrOx_Bvzf_9HVh9JqYQbuGOgkkCkSaYsXYaRYi15A/exec';
+
+async function api(payload) {
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  });
+  return res.json();
+}
+
+// ============================================
+// 상태
+// ============================================
+let role = null;
+let checkState = {};   // 상무 체크 상태
+let invState = {};     // 리더 재고 입력값
+
+// 대표 지시사항 (서버에서 불러옴)
+let ceoNotice = { text: '', date: '' };
+
+function $(id) { return document.getElementById(id); }
+
+function dateLabel() {
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  return `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+}
+$('dateLabel').textContent = dateLabel();
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show';
+  setTimeout(() => { t.className = 'toast'; }, 2200);
+}
+
+async function enterRole(r) {
+  role = r;
+  checkState = {};
+  invState = {};
+  $('roleView').classList.add('hidden');
+  $('contentView').classList.remove('hidden');
+
+  if (r === 'ceo') {
+    renderNoticeBox(false);        // 대표는 박스 대신 작성 화면
+    // 기존 지시사항 불러와서 편집창에 채우기
+    try { const res = await api({ action: 'getNotice' }); if (res.ok) ceoNotice = { text: res.text || '', date: res.date || '' }; } catch (e) {}
+    renderCeoEdit();
+    $('progressWrap').classList.add('hidden');
+    $('submitBtn').textContent = '지시사항 저장';
+  } else {
+    // 지시사항 불러오기
+    try { const res = await api({ action: 'getNotice' }); if (res.ok) ceoNotice = { text: res.text || '', date: res.date || '' }; } catch (e) {}
+    renderNoticeBox(true);         // 직원/상무/리더는 읽기 전용 박스
+    $('progressWrap').classList.remove('hidden');
+    $('submitBtn').textContent = '기록 완료';
+    if (r === 'supervisor') {
+      renderSupervisor();
+    } else {
+      // 리더: 전일 재고 불러와서 prefill
+      await loadPrevInventory(r);
+      renderLeader(r);
+    }
+    updateProgress();
+  }
+  window.scrollTo(0, 0);
+}
+
+// 전일 재고를 서버에서 불러와 LEADER_INV의 prev 값 갱신
+async function loadPrevInventory(floor) {
+  try {
+    const res = await api({ action: 'getInventory', floor: floor });
+    if (res.ok && res.items) {
+      const data = LEADER_INV[floor];
+      data.cats.forEach(cat => cat.items.forEach(it => {
+        if (res.items[it.name] !== undefined && res.items[it.name] !== '') {
+          it.prev = Number(res.items[it.name]);
+        }
+      }));
+    }
+  } catch (e) {}
+}
+
+// 지시사항 박스 (읽기 전용)
+function renderNoticeBox(show) {
+  const slot = $('noticeSlot');
+  if (!show) { slot.innerHTML = ''; return; }
+  if (ceoNotice.text && ceoNotice.text.trim()) {
+    slot.innerHTML = `<div class="notice-box">` +
+      `<div class="notice-head">📢 대표 지시사항</div>` +
+      `<div class="notice-body">${escapeHtml(ceoNotice.text)}</div>` +
+      `<div class="notice-date">— ${escapeHtml(ceoNotice.date)}</div></div>`;
+  } else {
+    slot.innerHTML = `<div class="notice-box empty">` +
+      `<div class="notice-head">📢 대표 지시사항</div>` +
+      `<div class="notice-body">오늘 등록된 지시사항이 없습니다.</div></div>`;
+  }
+}
+
+// 대표 작성 화면
+function renderCeoEdit() {
+  const c = $('sections');
+  c.innerHTML = `<div class="ceo-edit">` +
+    `<label>📢 전 직원에게 보낼 지시사항</label>` +
+    `<textarea id="ceoText" placeholder="예) 이번 주 토요일 어버이날 예약 폭주 예상. 2층 시트 재고 2배 준비.">${escapeHtml(ceoNotice.text)}</textarea>` +
+    `<div class="ceo-hint">저장하면 모든 직원·상무·리더 화면 최상단에 표시됩니다. 비우고 저장하면 지시사항이 사라져요.</div>` +
+    `</div>`;
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function goBack() {
+  $('contentView').classList.add('hidden');
+  $('roleView').classList.remove('hidden');
+  role = null;
+}
+
+// ============================================
+// 상무 화면 렌더
+// ============================================
+function renderSupervisor() {
+  const c = $('sections');
+  c.innerHTML = '';
+  SUPERVISOR.forEach(sec => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    let html = `<div class="section-head"><span class="ico">${sec.ico}</span>` +
+      `<span class="title">${sec.title}</span>` +
+      (sec.time ? `<span class="time">${sec.time}</span>` : '') + `</div>`;
+    sec.items.forEach(it => {
+      html += `<div class="check-card" id="card-${it.id}">`;
+      html += `<div class="check-row" onclick="toggleCheck('${it.id}')">`;
+      html += `<div class="checkbox">✓</div>`;
+      html += `<div class="check-label"><div class="lbl">${it.label}` +
+        (it.star ? `<span class="star">★</span>` : '') + `</div>`;
+      if (it.hint) html += `<div class="hint">${it.hint}</div>`;
+      html += `</div></div>`;
+      // 서브 체크 (워크인 등)
+      if (it.checks) {
+        html += `<div class="subchecks">`;
+        it.checks.forEach((label, idx) => {
+          const sid = `${it.id}-sub${idx}`;
+          html += `<div class="subcheck" id="sub-${sid}" onclick="toggleSub(event, '${sid}')">` +
+            `<div class="sbox">✓</div><span>${label}</span></div>`;
+        });
+        html += `</div>`;
+      }
+      // 숫자 입력
+      if (it.nums) {
+        html += `<div class="num-grid">`;
+        it.nums.forEach(n => {
+          html += `<div class="num-item"><label>${n.label}</label>` +
+            `<input type="number" inputmode="numeric" id="num-${it.id}-${n.k}" placeholder="0"></div>`;
+        });
+        html += `</div>`;
+      }
+      // 메모
+      if (it.memo) {
+        html += `<div class="memo-box"><textarea id="memo-${it.id}" placeholder="${it.memo}"></textarea></div>`;
+      }
+      // 리더 작성 현황 (시뮬레이션)
+      if (it.floors) {
+        html += `<div class="floor-status">` +
+          `<div class="floor-chip ok">2F ✓</div>` +
+          `<div class="floor-chip no">3F 미작성</div>` +
+          `<div class="floor-chip ok">4F ✓</div>` +
+          `</div>`;
+      }
+      html += `</div>`;
+    });
+    secEl.innerHTML = html;
+    c.appendChild(secEl);
+  });
+}
+
+function toggleCheck(id) {
+  checkState[id] = !checkState[id];
+  $('card-' + id).classList.toggle('done', checkState[id]);
+  updateProgress();
+}
+
+function toggleSub(e, sid) {
+  if (e) e.stopPropagation();
+  checkState['sub-' + sid] = !checkState['sub-' + sid];
+  $('sub-' + sid).classList.toggle('on', checkState['sub-' + sid]);
+}
+
+// ============================================
+// 리더 화면 렌더
+// ============================================
+function renderLeader(floor) {
+  const data = LEADER_INV[floor];
+  const c = $('sections');
+  c.innerHTML = '';
+
+  // 전일 prefill 안내
+  const note = document.createElement('div');
+  note.className = 'carry-note';
+  note.innerHTML = `❄️ <b>어제 마감 재고</b>가 미리 채워져 있어요. <b>오늘 실제 재고</b>로 바꿔주세요.<br>` +
+    `현재고가 <b>안전재고보다 낮으면</b> 자동으로 빨간불(긴급)이 떠요.`;
+  c.appendChild(note);
+
+  data.cats.forEach(cat => {
+    const catEl = document.createElement('div');
+    catEl.className = 'inv-cat';
+    let html = `<div class="inv-cat-title">${cat.cat}</div>`;
+    html += `<div class="inv-head"><div>품목</div><div>현재고</div><div>안전</div></div>`;
+    cat.items.forEach(it => {
+      invState[it.k] = it.prev; // 전일값 prefill
+      const alert = it.prev < it.safe;
+      html += `<div class="inv-row ${alert ? 'alert' : ''}" id="inv-${it.k}">`;
+      html += `<div class="name">${it.name}<span class="prev">어제 ${it.prev}</span></div>`;
+      html += `<input type="number" inputmode="numeric" value="${it.prev}" ` +
+        `data-safe="${it.safe}" onchange="onInvChange('${it.k}', this)" oninput="onInvChange('${it.k}', this)">`;
+      html += alert ? `<div class="badge-alert">긴급</div>` : `<div class="safe">${it.safe}</div>`;
+      html += `</div>`;
+    });
+    catEl.innerHTML = html;
+    c.appendChild(catEl);
+  });
+
+  // 품목 직접 추가 (모든 층)
+  const extraEl = document.createElement('div');
+  extraEl.className = 'inv-cat';
+  extraEl.innerHTML = `<div class="inv-cat-title">＋ 목록에 없는 품목 직접 추가</div>` +
+    `<div class="extra-box" id="extraBox"></div>` +
+    `<button class="add-btn" onclick="addExtraRow()">＋ 품목 추가</button>` +
+    `<div class="add-hint">신제품·빠진 품목을 여기에 적어주세요. 자주 추가되는 품목은 다음 업데이트 때 정식 목록에 넣어드려요.</div>`;
+  c.appendChild(extraEl);
+
+  // 레옹기 일지 사진 (4F만)
+  if (data.leon) {
+    const leonEl = document.createElement('div');
+    leonEl.className = 'leon-box';
+    leonEl.innerHTML = `<div class="leon-title">📸 레옹기 일지 (돌린 날만)</div>` +
+      `<div class="leon-sub">레옹기를 돌린 날은 작업지도(일지)를 사진 찍어 올려주세요. 안 돌린 날은 비워두면 됩니다.</div>` +
+      `<input type="file" accept="image/*" onchange="onLeonPhoto(this)">` +
+      `<div class="leon-preview" id="leonPreview"></div>`;
+    c.appendChild(leonEl);
+  }
+}
+
+let extraCount = 0;
+function addExtraRow() {
+  extraCount++;
+  const box = $('extraBox');
+  const row = document.createElement('div');
+  row.className = 'extra-row';
+  row.id = 'extra-' + extraCount;
+  row.innerHTML = `<input type="text" placeholder="품목명" oninput="onExtraChange()">` +
+    `<input type="number" inputmode="numeric" placeholder="수량" oninput="onExtraChange()">` +
+    `<button class="del" onclick="delExtraRow(${extraCount})">✕</button>`;
+  box.appendChild(row);
+}
+function delExtraRow(id) {
+  const row = $('extra-' + id);
+  if (row) row.remove();
+  onExtraChange();
+}
+function onExtraChange() {
+  // 프로토타입: 실제 앱에선 입력값을 invState.extras에 모아 시트 저장
+}
+function onLeonPhoto(input) {
+  const prev = $('leonPreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { prev.innerHTML = `<img src="${e.target.result}" alt="레옹기 일지">`; };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    prev.innerHTML = '';
+  }
+}
+
+function onInvChange(k, input) {
+  const val = parseFloat(input.value);
+  const safe = parseFloat(input.dataset.safe);
+  invState[k] = isNaN(val) ? null : val;
+  const row = $('inv-' + k);
+  const alert = !isNaN(val) && val < safe;
+  row.classList.toggle('alert', alert);
+  const last = row.querySelector('.safe, .badge-alert');
+  if (last) {
+    if (alert) { last.className = 'badge-alert'; last.textContent = '긴급'; }
+    else { last.className = 'safe'; last.textContent = safe; }
+  }
+}
+
+// ============================================
+// 진행률
+// ============================================
+function updateProgress() {
+  if (role === 'supervisor') {
+    const total = SUPERVISOR.reduce((s, sec) => s + sec.items.length, 0);
+    const done = Object.values(checkState).filter(Boolean).length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    $('progressFill').style.width = pct + '%';
+    $('progressLabel').textContent = `${done} / ${total} 완료`;
+  } else if (role) {
+    // 리더는 입력 완료율 대신 "전체 입력됨" 표시
+    $('progressFill').style.width = '100%';
+    $('progressLabel').textContent = '재고 입력 중';
+  }
+}
+
+// ============================================
+// 제출 (프로토타입 — 실제론 구글시트로 저장)
+// ============================================
+async function submitForm() {
+  const btn = $('submitBtn');
+
+  // ── 대표: 지시사항 저장 (구글시트) ──
+  if (role === 'ceo') {
+    const txt = $('ceoText').value.trim();
+    btn.disabled = true; const old = btn.textContent; btn.textContent = '저장 중…';
+    try {
+      const res = await api({ action: 'setNotice', text: txt });
+      if (res.ok) { ceoNotice = { text: txt, date: '방금' };
+        toast(txt ? '✓ 지시사항 저장 · 전 직원에게 표시됩니다' : '✓ 지시사항을 비웠습니다');
+      } else { toast('저장 실패: ' + (res.error || '오류')); }
+    } catch (e) { toast('네트워크 오류'); }
+    finally { btn.disabled = false; btn.textContent = old; }
+    return;
+  }
+
+  // ── 상무: 일일 점검 → 노션 저장 ──
+  if (role === 'supervisor') {
+    const required = SUPERVISOR.flatMap(s => s.items).filter(i => i.star).map(i => i.id);
+    const missing = required.filter(id => !checkState[id]);
+    if (missing.length > 0) { toast(`필수(★) 항목 ${missing.length}개가 남았어요`); return; }
+
+    const g = id => $(id) ? $(id).value.trim() : '';
+    const data = {
+      s1: !!checkState['s1'],
+      s2: !!checkState['s2'],   s2memo: g('memo-s2'),
+      wk2: !!checkState['sub-s3-sub0'], memo2: g('memo-s3'),
+      wk3: !!(checkState['sub-s4-sub0'] && checkState['sub-s4-sub1']), memo3: g('memo-s4'),
+      wk4: !!(checkState['sub-s5-sub0'] && checkState['sub-s5-sub1']), memo4: g('memo-s5'),
+      bang: g('num-s6-bang'), ddeok: g('num-s6-ddeok'), butter: g('num-s6-butter'), cream: g('num-s6-cream'),
+      hyg: !!checkState['shyg'], hygmemo: g('memo-shyg'),
+      preorder: g('num-s8-preorder'), prememo: g('memo-s8'),
+      plan: !!checkState['s9'],
+      comment: g('memo-s11')
+    };
+    btn.disabled = true; const old = btn.textContent; btn.textContent = '저장 중…';
+    try {
+      const res = await api({ action: 'saveSupervisor', data: data });
+      if (res.ok) toast('✓ 상무 점검 저장 완료 (노션 기록)');
+      else toast('저장 실패: ' + (res.error || '오류'));
+    } catch (e) { toast('네트워크 오류'); }
+    finally { btn.disabled = false; btn.textContent = old; }
+    return;
+  }
+
+  // ── 리더: 재고 → 구글시트 저장 ──
+  const items = {};
+  const alerts = [];
+  const data = LEADER_INV[role];
+  data.cats.forEach(cat => cat.items.forEach(it => {
+    const v = invState[it.k];
+    if (v != null) {
+      items[it.name] = v;
+      if (v < it.safe) alerts.push(it.name);
+    }
+  }));
+  // 직접추가 품목 수집
+  document.querySelectorAll('#extraBox .extra-row').forEach(row => {
+    const inps = row.querySelectorAll('input');
+    const nm = inps[0].value.trim(); const qt = inps[1].value.trim();
+    if (nm) items['[추가] ' + nm] = qt;
+  });
+
+  btn.disabled = true; const old = btn.textContent; btn.textContent = '저장 중…';
+  try {
+    const res = await api({ action: 'saveInventory', floor: role, items: items });
+    if (res.ok) {
+      if (alerts.length > 0) toast(`✓ 저장 완료 · 긴급 ${alerts.length}개 (${alerts.slice(0,2).join(', ')}${alerts.length>2?' 외':''})`);
+      else toast('✓ 재고 입력 완료 · 모두 양호');
+    } else { toast('저장 실패: ' + (res.error || '오류')); }
+  } catch (e) { toast('네트워크 오류'); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+
+</script>
+</body>
+</html>
