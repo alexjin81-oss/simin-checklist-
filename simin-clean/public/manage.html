@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>시민제과 관리 체크리스트 (프로토타입)</title>
+<title>시민제과 관리</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
   :root {
@@ -264,7 +264,7 @@
   <!-- 역할 선택 (프로토타입 전용 — 실제 앱에선 로그인으로 자동 분기) -->
   <div id="roleView">
     <div class="proto-tag" style="margin-top:0;margin-bottom:8px;">
-      프로토타입 — 실제 앱에선 로그인하면 역할에 따라 자동으로 화면이 열립니다
+      본인 역할을 선택하세요
     </div>
     <div class="role-pick">
       <button onclick="enterRole('ceo')">
@@ -307,7 +307,7 @@
 // 6/9 상담에서 시행 발표 후, 아래를 true 로 바꾸고 저장하면 전 직원 공개됩니다.
 // 켜기 전에 미리 보려면 주소 뒤에 ?preview=1 을 붙이세요.
 //   예) https://simin-checklist.vercel.app/manage.html?preview=1
-const LAUNCHED = false;
+const LAUNCHED = true;
 
 (function checkGate() {
   const preview = new URLSearchParams(location.search).get('preview') === '1';
@@ -397,7 +397,7 @@ const LEADER_INV = {
         { k: 'moca', name: '모카시트', safe: 20, prev: 26 },
         { k: 'or1', name: '오렌지시트 1호', safe: 15, prev: 20 },
         { k: 'or2', name: '오렌지시트 2호', safe: 15, prev: 16 },
-        { k: 'chppi', name: '치즈쁘피', safe: 30, prev: 48 },
+        { k: 'chppi', name: '치즈 쁘띠', safe: 30, prev: 48 },
       ]},
       { cat: '케이크', items: [
         { k: 'cheese', name: '치즈케이크', safe: 20, prev: 14 },
@@ -415,6 +415,25 @@ const LEADER_INV = {
         { k: 'fruittart', name: '과일타르트', safe: 40, prev: 46 },
         { k: 'milkroll', name: '우유롤', safe: 120, prev: 176 },
         { k: 'riceroll', name: '쌀롤', safe: 20, prev: 18 },
+      ]},
+      { cat: '크림 마들렌류', items: [
+        { k: 'mdchoco', name: '초코마들렌', safe: 30, prev: 0 },
+        { k: 'mdstraw', name: '산딸기마들렌', safe: 30, prev: 0 },
+        { k: 'mdexo', name: '에그조틱마들렌', safe: 30, prev: 0 },
+        { k: 'mdcara', name: '카라멜마들렌', safe: 30, prev: 0 },
+      ]},
+      { cat: '쿠키류', items: [
+        { k: 'ckcoco', name: '코코넛샤브레쿠키', safe: 10, prev: 0 },
+        { k: 'ckmandel', name: '쇼콜라만델쿠키', safe: 10, prev: 0 },
+        { k: 'ckhazel', name: '헤즐넛티쿠키', safe: 10, prev: 0 },
+        { k: 'ckchoco', name: '쇼콜라티쿠키', safe: 10, prev: 0 },
+        { k: 'cknoa', name: '카페노와제트', safe: 10, prev: 0 },
+        { k: 'cksalted', name: '솔티드쇼콜라티쿠키', safe: 10, prev: 0 },
+        { k: 'ckmaca', name: '마카다미아티쿠키', safe: 10, prev: 0 },
+        { k: 'ckmacamini', name: '마카다미아미니쿠키', safe: 10, prev: 0 },
+      ]},
+      { cat: '기타', items: [
+        { k: 'neonez', name: '네오네즈', safe: 20, prev: 0 },
       ]},
     ]
   },
