@@ -3,26 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#2c2c2c">
+<meta name="theme-color" content="#6E2A2B">
 <title>시민제과 생산기록</title>
 <style>
+  /* 시민제과 색: 팥(브랜드) × 밀크(바탕). 층마다 고유 색, 상태는 빨강·초록·주황 */
+  :root {
+    --pat: #6E2A2B; --pat-deep: #4B191C; --pat-tint: #F3E7E4;
+    --milk: #FBF8F2; --ink: #2B1D1B; --sub: #8A7873; --line: #E8DDD6;
+    --ok: #2F7D4F; --ok-bg: #E8F3EC; --danger: #C4372B; --danger-bg: #FBEAE8;
+    --warn: #C96A12; --warn-bg: #FCF0E1;
+    --f2: #B4506B; --f3: #A67628; --f4: #3A6C8E; --fh: #5C5A9A;
+    --floor: var(--pat);
+  }
+  body[data-floor="2층"] { --floor: var(--f2); }
+  body[data-floor="3층"] { --floor: var(--f3); }
+  body[data-floor="4층"] { --floor: var(--f4); }
+  body[data-floor="생산실"] { --floor: var(--fh); }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    background: #f5f5f0;
-    color: #1a1a1a;
+    background: var(--milk);
+    color: var(--ink);
     min-height: 100vh;
+    border-top: 6px solid var(--floor);
+    transition: border-color 0.2s;
     font-size: 16px;
     line-height: 1.4;
   }
   .container { max-width: 480px; margin: 0 auto; padding: 24px 20px 60px; }
-  .header { text-align: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e6df; }
-  .header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
+  .header { text-align: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 700; color: var(--pat); }
   .header .sub { font-size: 13px; color: #888; }
   .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
   .label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; display: block; }
-  .label .req { color: #c0392b; margin-left: 2px; }
+  .label .req { color: var(--danger); margin-left: 2px; }
   select, input[type=text], input[type=password], input[type=number], textarea {
     width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 12px;
     font-size: 16px; font-family: inherit; background: #fff; color: #1a1a1a;
@@ -40,17 +55,27 @@
     border-radius: 12px; font-size: 15px; font-weight: 500; color: #555;
     cursor: pointer; font-family: inherit;
   }
-  .seg button.active { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+  .seg button.active { background: var(--pat); color: #fff; border-color: var(--pat); }
+  /* 층 버튼은 그 층의 색으로 */
+  #floorSeg button { border-bottom: 4px solid var(--c, var(--line)); }
+  #floorSeg button.active { background: var(--c, var(--pat)); border-color: var(--c, var(--pat)); }
+  [data-val="2층"] { --c: var(--f2); } [data-val="3층"] { --c: var(--f3); }
+  [data-val="4층"] { --c: var(--f4); } [data-val="생산실"] { --c: var(--fh); }
+  .seg button small { display: block; font-size: 11px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+  .late-note {
+    margin-top: 8px; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.4;
+    background: var(--warn-bg); color: var(--warn); font-weight: 600;
+  }
   .checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .checks label {
     display: flex; align-items: center; padding: 12px; border: 1px solid #ddd;
     border-radius: 10px; cursor: pointer; font-size: 14px; background: #fff;
   }
-  .checks label.checked { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
-  .checks input { margin-right: 8px; accent-color: #2c2c2c; }
+  .checks label.checked { background: var(--pat); color: #fff; border-color: var(--pat); }
+  .checks input { margin-right: 8px; accent-color: var(--pat); }
   .checks label.checked input { accent-color: #fff; }
   .btn-primary {
-    width: 100%; padding: 16px; background: #2c2c2c; color: #fff; border: none;
+    width: 100%; padding: 16px; background: var(--pat); color: #fff; border: none;
     border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer;
     font-family: inherit; margin-top: 8px;
   }
@@ -58,11 +83,12 @@
   .row { margin-bottom: 16px; }
   .row:last-child { margin-bottom: 0; }
   .user-bar {
-    background: #2c2c2c; color: #fff; border-radius: 12px; padding: 12px 16px;
+    background: var(--pat); color: #fff; border-radius: 12px; padding: 12px 16px;
     margin-bottom: 16px; display: flex; justify-content: space-between;
     align-items: center; font-size: 14px;
   }
   .user-bar .who { font-weight: 600; }
+  .user-bar { border-bottom: 4px solid var(--floor); }
   .user-bar .logout {
     color: #ccc; background: transparent; border: none; font-size: 13px;
     cursor: pointer; padding: 4px 8px;
@@ -74,7 +100,7 @@
     pointer-events: none; max-width: 90%; text-align: center;
   }
   .toast.show { opacity: 1; }
-  .toast.error { background: #c0392b; }
+  .toast.error { background: var(--danger); }
   .hidden { display: none !important; }
   .hint { font-size: 12px; color: #999; margin-top: 6px; }
   .loading-overlay {
@@ -83,12 +109,12 @@
   }
   .spinner {
     width: 32px; height: 32px; border: 3px solid #e0e0e0;
-    border-top-color: #2c2c2c; border-radius: 50%; animation: spin 0.8s linear infinite;
+    border-top-color: var(--pat); border-radius: 50%; animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .main-tabs {
-    display: flex; background: #e8e6df; border-radius: 14px; padding: 4px; margin-bottom: 16px;
+    display: flex; background: var(--pat-tint); border-radius: 14px; padding: 4px; margin-bottom: 16px;
   }
   .main-tabs button {
     flex: 1; padding: 12px 8px; border: none; background: transparent;
@@ -96,11 +122,11 @@
     cursor: pointer; font-family: inherit; transition: all 0.15s;
   }
   .main-tabs button.active {
-    background: #fff; color: #1a1a1a; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    background: #fff; color: var(--pat); box-shadow: 0 1px 2px rgba(75,25,28,0.10);
   }
 
   .summary-card {
-    background: #2c2c2c; color: #fff; border-radius: 16px;
+    background: var(--pat); color: #fff; border-radius: 16px;
     padding: 16px 18px; margin-bottom: 12px;
   }
   .summary-card .total { font-size: 13px; color: #ccc; margin-bottom: 4px; }
@@ -122,13 +148,13 @@
     border-radius: 20px; font-size: 13px; color: #555; cursor: pointer;
     font-family: inherit; white-space: nowrap;
   }
-  .filter-row button.active { background: #2c2c2c; color: #fff; border-color: #2c2c2c; }
+  .filter-row button.active { background: var(--pat); color: #fff; border-color: var(--pat); }
 
   .record-card {
     background: #fff; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   }
-  .record-card.has-waste { border-left: 3px solid #c0392b; }
+  .record-section.waste { background: var(--danger-bg); border-radius: 10px; padding: 9px 11px; margin-top: 10px; }
   .record-meta {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 8px; font-size: 12px; color: #888;
@@ -139,7 +165,14 @@
     background: #f0eee8; color: #666; padding: 2px 8px;
     border-radius: 10px; font-size: 11px;
   }
-  .record-meta .tag.period { background: #e8e6df; }
+  .record-meta .tag.period { background: var(--pat-tint); color: var(--pat); }
+  .record-meta .tag.floor { background: var(--c, #f0eee8); color: #fff; font-weight: 600; }
+  .record-meta .tag.late { background: var(--warn-bg); color: var(--warn); font-weight: 600; }
+  .record-card { border-left: 4px solid var(--c, var(--line)); }
+  #floorFilter button.active { background: var(--c, var(--pat)); border-color: var(--c, var(--pat)); }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--pat); outline-offset: 2px;
+  }
   .record-meta .time { color: #aaa; font-size: 11px; }
   .record-section { margin-top: 8px; }
   .record-section .sec-label {
@@ -150,10 +183,10 @@
     font-size: 14px; color: #1a1a1a; white-space: pre-wrap; line-height: 1.5;
     word-break: break-word;
   }
-  .record-section.waste .sec-label { color: #c0392b; }
+  .record-section.waste .sec-label { color: var(--danger); }
   .waste-reasons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
   .waste-reasons .reason {
-    background: #fdebea; color: #c0392b; padding: 3px 9px;
+    background: var(--danger-bg); color: var(--danger); padding: 3px 9px;
     border-radius: 10px; font-size: 11px; font-weight: 500;
   }
   .empty-state { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
@@ -168,7 +201,9 @@
      v2: 작업 카드 스타일
      ============================================ */
   .work-card {
-    background: #f8f8f8;
+    background: var(--milk);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--floor);
     border-radius: 12px;
     padding: 14px;
     margin-bottom: 10px;
@@ -231,7 +266,7 @@
   }
   .note-hint {
     font-size: 12px;
-    color: #f59e0b;
+    color: var(--warn);
     margin-top: -4px;
     margin-bottom: 8px;
   }
@@ -276,7 +311,7 @@
           <label class="label">매장</label>
           <div class="seg" id="storeSeg">
             <button data-val="본점">본점</button>
-            <button data-val="효자점">효자점</button>
+            <button data-val="효자강변점">효자강변점</button>
           </div>
         </div>
         <div class="row">
@@ -290,6 +325,14 @@
             <button data-val="오후">오후 (퇴근 전)</button>
           </div>
         </div>
+        <div class="row">
+          <label class="label">기록 날짜</label>
+          <div class="seg" id="dateSeg">
+            <button data-val="today">오늘<small id="dateTodayLabel"></small></button>
+            <button data-val="yesterday">어제<small id="dateYesterdayLabel"></small></button>
+          </div>
+          <div class="late-note hidden" id="lateNote"></div>
+        </div>
       </div>
 
       <div class="card">
@@ -297,7 +340,7 @@
           <label class="label">이번 시간대 한 작업 <span class="req">*</span></label>
           <div id="worksContainer"></div>
           <button type="button" class="add-btn" id="addWorkBtn">+ 작업 추가</button>
-          <div class="hint">카테고리를 먼저 고른 다음, 작업을 선택하세요. 목록에 없으면 "직접 입력"을 사용하세요.</div>
+          <div class="hint" id="catalogHint">카테고리를 먼저 고른 다음, 작업을 선택하세요. 목록에 없으면 "직접 입력"을 사용하세요.</div>
         </div>
       </div>
 
@@ -337,7 +380,7 @@
       <div class="filter-row" id="storeFilter">
         <button data-val="all" class="active">전체 매장</button>
         <button data-val="본점">본점</button>
-        <button data-val="효자점">효자점</button>
+        <button data-val="효자강변점">효자강변점</button>
       </div>
 
       <div class="filter-row" id="floorFilter">
@@ -359,8 +402,19 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKJWb8Ye5Pr94B
 
 const FLOOR_OPTIONS = {
   '본점': ['2층', '3층', '4층'],
-  '효자점': ['생산실']
+  '효자강변점': ['생산실']
 };
+// 예전 이름으로 저장된 매장은 지금 이름으로 맞춘다
+const STORE_ALIASES = { '효자점': '효자강변점' };
+function normStore(s) { const t = String(s || '').trim(); return STORE_ALIASES[t] || t; }
+
+// 한국 날짜 (기기 시간대와 상관없이)
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+function kstDay(offsetDays) {
+  const d = new Date(Date.now() + 9 * 3600 * 1000 - (offsetDays || 0) * 86400 * 1000);
+  const iso = d.toISOString().slice(0, 10);
+  return { iso: iso, label: (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '(' + DAY_NAMES[d.getUTCDay()] + ')' };
+}
 const ALL_FLOORS = ['2층', '3층', '4층', '생산실'];
 
 // ============================================
@@ -403,7 +457,7 @@ const UNITS = ['개', '판', 'kg', '통', '봉', '건'];
 const NOTE_RECOMMENDED_CATEGORIES = ['페스츄리'];
 
 let currentUser = null;
-let selected = { store: null, floor: null, period: null };
+let selected = { store: null, floor: null, period: null, date: 'today' };
 let viewState = { range: 'today', store: 'all', floor: 'all', records: [] };
 let workCounter = 0;
 
@@ -486,6 +540,13 @@ function addWork() {
     '<div class="note-hint" style="display:none;">💡 페스츄리는 어느 단계까지 했는지 적어주세요 (예: 성형까지)</div>';
 
   container.appendChild(card);
+
+  // 품목 목록이 없는 곳(직접 입력만 있음)은 바로 입력 칸을 보여준다
+  if (categories.length === 1 && categories[0] === '직접 입력') {
+    const sel = card.querySelector('.category-select');
+    sel.value = '직접 입력';
+    onCategoryChange(sel);
+  }
 }
 
 function removeWork(btn) {
@@ -562,6 +623,30 @@ function resetWorkForm() {
   $('worksContainer').innerHTML = '';
   workCounter = 0;
   addWork();
+  const key = getCurrentFloorKey();
+  $('catalogHint').textContent = (key && TASK_CATALOG[key] && Object.keys(TASK_CATALOG[key]).length > 1)
+    ? '카테고리를 먼저 고른 다음, 작업을 선택하세요. 목록에 없으면 "직접 입력"을 사용하세요.'
+    : '이 구역은 아직 품목 목록이 없어요. 작업명을 직접 적어주세요.';
+}
+
+function setFloorTheme() {
+  document.body.dataset.floor = selected.floor || '';
+}
+
+function renderDateSeg() {
+  const t = kstDay(0), y = kstDay(1);
+  $('dateTodayLabel').textContent = t.label;
+  $('dateYesterdayLabel').textContent = y.label;
+  document.querySelectorAll('#dateSeg button').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === selected.date);
+  });
+  const note = $('lateNote');
+  if (selected.date === 'yesterday') {
+    note.textContent = '어제 못 올린 기록을 어제 날짜(' + y.label.replace('(', ' ').replace(')', '') + ')로 저장합니다.';
+    note.classList.remove('hidden');
+  } else {
+    note.classList.add('hidden');
+  }
 }
 
 // ============================================
@@ -576,7 +661,7 @@ async function loadStaffList() {
       res.list.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.name;
-        opt.textContent = s.name + ' (' + s.store + ')';
+        opt.textContent = s.name + ' (' + normStore(s.store) + ')';
         sel.appendChild(opt);
       });
     } else {
@@ -599,7 +684,7 @@ async function doLogin() {
   try {
     const res = await api({ action: 'login', name, pin });
     if (res.ok) {
-      currentUser = { name: res.name, store: res.store, defaultFloor: res.defaultFloor };
+      currentUser = { name: res.name, store: normStore(res.store), defaultFloor: res.defaultFloor };
       localStorage.setItem('simin_user', JSON.stringify(currentUser));
       enterMain();
     } else {
@@ -615,12 +700,13 @@ async function doLogin() {
 function enterMain() {
   hide('loginView');
   show('mainView');
+  currentUser.store = normStore(currentUser.store);
   $('userWho').textContent = currentUser.name + ' · ' + currentUser.store;
 
-  selected.store = currentUser.store;
+  selected.store = FLOOR_OPTIONS[currentUser.store] ? currentUser.store : '본점';
   renderStoreSeg();
 
-  const floors = FLOOR_OPTIONS[currentUser.store] || [];
+  const floors = FLOOR_OPTIONS[selected.store] || [];
   if (floors.includes(currentUser.defaultFloor)) {
     selected.floor = currentUser.defaultFloor;
   } else {
@@ -631,6 +717,8 @@ function enterMain() {
   const hour = new Date().getHours();
   selected.period = hour < 14 ? '오전' : '오후';
   renderPeriodSeg();
+  selected.date = 'today';
+  renderDateSeg();
 
   // 작업 카드 초기화
   resetWorkForm();
@@ -643,6 +731,7 @@ function renderStoreSeg() {
 }
 
 function renderFloorSeg() {
+  setFloorTheme();
   const seg = $('floorSeg');
   seg.innerHTML = '';
   const floors = FLOOR_OPTIONS[selected.store] || [];
@@ -678,15 +767,25 @@ async function doSubmit() {
   const reasons = Array.from(document.querySelectorAll('#reasonChecks input:checked'))
     .map(i => i.value).join(', ');
 
+  const day = kstDay(selected.date === 'yesterday' ? 1 : 0);
+
   showLoading();
   try {
     const res = await api({
       action: 'submit', name: currentUser.name,
       store: selected.store, floor: selected.floor, period: selected.period,
-      work, waste, wasteReasons: reasons
+      work, waste, wasteReasons: reasons, recordDate: day.iso
     });
     if (res.ok) {
-      toast('✓ 기록 완료');
+      if (selected.date === 'yesterday' && res.date !== day.iso) {
+        toast('저장은 됐지만 오늘 날짜로 들어갔어요. 관리자에게 알려주세요.', true);
+      } else if (selected.date === 'yesterday') {
+        toast('✓ 어제 ' + day.label + ' 기록으로 저장했어요');
+      } else {
+        toast('✓ 기록 완료');
+      }
+      selected.date = 'today';
+      renderDateSeg();
       resetWorkForm();
       $('waste').value = '';
       document.querySelectorAll('#reasonChecks input').forEach(i => {
@@ -721,7 +820,7 @@ async function loadRecords() {
   try {
     const res = await api({ action: 'getRecords', range: viewState.range });
     if (res.ok) {
-      viewState.records = res.records || [];
+      viewState.records = (res.records || []).map(r => Object.assign({}, r, { store: normStore(r.store) }));
       renderFloorFilterOptions();
       renderRecords();
     } else {
@@ -810,16 +909,19 @@ function renderRecords() {
     const card = document.createElement('div');
     const hasWaste = (r.waste && r.waste.trim()) || (r.wasteReasons && r.wasteReasons.trim());
     card.className = 'record-card' + (hasWaste ? ' has-waste' : '');
+    card.dataset.val = r.floor || '';
 
     let html = '<div class="record-meta">' +
       '<span class="who">' + escapeHtml(r.name) + '</span>' +
       '<div class="tags">' +
-        '<span class="tag">' + escapeHtml(r.store) + ' · ' + escapeHtml(r.floor) + '</span>' +
+        '<span class="tag">' + escapeHtml(r.store) + '</span>' +
+        '<span class="tag floor" data-val="' + escapeHtml(r.floor) + '">' + escapeHtml(r.floor) + '</span>' +
         '<span class="tag period">' + escapeHtml(r.period) + '</span>' +
       '</div>' +
     '</div>' +
     '<div class="record-meta" style="margin-top:-4px;margin-bottom:8px;">' +
       '<span class="time">' + escapeHtml(r.date) + ' ' + escapeHtml(r.timeStr || '') + '</span>' +
+      (r.late ? '<span class="tag late">다음 날 입력</span>' : '') +
     '</div>' +
     '<div class="record-section">' +
       '<div class="sec-label">작업</div>' +
@@ -853,7 +955,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (saved) {
     try {
       currentUser = JSON.parse(saved);
-      enterMain();
+      if (currentUser && currentUser.name) enterMain(); else currentUser = null;
     } catch (e) {}
   }
 
@@ -864,7 +966,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!confirm('로그아웃 하시겠어요?')) return;
     localStorage.removeItem('simin_user');
     currentUser = null;
-    selected = { store: null, floor: null, period: null };
+    selected = { store: null, floor: null, period: null, date: 'today' };
+    setFloorTheme();
     $('loginName').value = '';
     $('loginPin').value = '';
     hide('mainView');
@@ -884,6 +987,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.querySelectorAll('#periodSeg button').forEach(b => {
     b.onclick = () => { selected.period = b.dataset.val; renderPeriodSeg(); };
+  });
+
+  document.querySelectorAll('#dateSeg button').forEach(b => {
+    b.onclick = () => { selected.date = b.dataset.val; renderDateSeg(); };
   });
 
   document.querySelectorAll('#reasonChecks input').forEach(input => {
