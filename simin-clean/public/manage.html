@@ -436,22 +436,31 @@ const LEADER_INV = {
         { k: 'cs2', name: '초코시트 2호', safe: 20 },
         { k: 'cs3', name: '초코시트 3호', safe: 20 },
         { k: 'moca', name: '모카시트', safe: 20 },
-        { k: 'or1', name: '오렌지시트 1호', safe: 15 },
-        { k: 'or2', name: '오렌지시트 2호', safe: 15 },
         { k: 'chppi', name: '치즈 쁘띠', safe: 30 },
       ]},
       { cat: '케이크', items: [
-        { k: 'cheese', name: '치즈케이크', safe: 20 },
+        // 2026-10-18 치즈케이크·딸기티라미스·고구마케이크를 호수별로 나눔 (안전재고는 기준 정해지면 입력)
+        { k: 'cheese2', name: '치즈케이크 2호', safe: null },
+        { k: 'cheese3', name: '치즈케이크 3호', safe: null },
         { k: 'tira', name: '티라미스', safe: 30 },
         { k: 'mongmini', name: '몽미니', safe: 30 },
         { k: 'oreo', name: '오레오', safe: 15 },
         { k: 'kiri', name: '키리시', safe: 15 },
         { k: 'carrot', name: '당근', safe: 25 },
-        { k: 'sttira', name: '딸기티라미스', safe: 30 },
-        { k: 'gomu', name: '고구마케이크', safe: 30 },
+        { k: 'sttira1', name: '딸기티라미스 1호', safe: null },
+        { k: 'sttira2', name: '딸기티라미스 2호', safe: null },
+        { k: 'gomu1', name: '고구마케이크 1호', safe: null },
+        { k: 'gomu2', name: '고구마케이크 2호', safe: null },
+      ]},
+      { cat: '카스테라', items: [
+        { k: 'ricecas_l', name: '쌀카스테라 대', safe: null },
+        { k: 'ricecas_s', name: '쌀카스테라 소', safe: null },
+        { k: 'chococas_l', name: '초코카스테라 대', safe: null },
+        { k: 'chococas_s', name: '초코카스테라 소', safe: null },
+        { k: 'pumpkincas', name: '단호박 카스테라', safe: null },
       ]},
       { cat: '구움과자·기타', items: [
-        { k: 'phmadeline', name: '포항마들렌', safe: 200 },
+        { k: 'lemoncake', name: '레몬케이크', safe: null },
         { k: 'egg', name: '에그타르트', safe: 50 },
         { k: 'fruittart', name: '과일타르트', safe: 40 },
         { k: 'milkroll', name: '우유롤', safe: 120 },
@@ -985,6 +994,11 @@ function renderLeader(floor) {
 }
 
 // 평소와 크게 다른 숫자인지 (오타 방지용)
+// 안전재고 기준이 없는 품목(null)은 긴급으로 보지 않는다
+function belowSafe(v, safe) {
+  return v !== null && typeof safe === 'number' && v < safe;
+}
+
 function isOutlier(v, prev) {
   if (v === null) return false;
   if (v >= 10000) return true;
@@ -997,7 +1011,7 @@ function paintRow(k) {
   const s = inv[k], m = invMeta[k], row = $('inv-' + k);
   if (!row) return;
   const has = s.v !== null;
-  const alert = has && s.v < m.safe;
+  const alert = has && belowSafe(s.v, m.safe);
   row.classList.toggle('done', has && !s.warn && !alert);
   row.classList.toggle('alert', alert && !s.warn);
   row.classList.toggle('pending', !!s.warn);
@@ -1007,7 +1021,7 @@ function paintRow(k) {
   if (s.warn) st.innerHTML = `<span class="badge-warn">확인</span>`;
   else if (alert) st.innerHTML = `<span class="badge-alert">긴급</span>`;
   else if (has) st.innerHTML = `<span class="badge-ok">✓</span>`;
-  else st.textContent = m.safe;
+  else st.textContent = typeof m.safe === 'number' ? m.safe : '–';
 
   const w = $('warn-' + k);
   if (s.warn) {
@@ -1219,7 +1233,7 @@ async function submitForm() {
       dirty.forEach(k => { inv[k].mode = 'today'; inv[k].ack = true; });
       $('extraBox').innerHTML = '';
       clearDraft(floor);
-      const alerts = keys.filter(k => inv[k].v !== null && inv[k].v < invMeta[k].safe).length;
+      const alerts = keys.filter(k => belowSafe(inv[k].v, invMeta[k].safe)).length;
       const left = keys.filter(k => inv[k].v === null).length;
       let msg = `✓ ${count}개 저장`;
       if (alerts) msg += ` · 긴급 ${alerts}개`;
