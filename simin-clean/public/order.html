@@ -80,9 +80,6 @@ input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:
   <input class="search" id="q" placeholder="제품 검색" aria-label="제품 검색">
 </header>
 
-<div id="setup" class="setup" hidden>
-  슬랙 연결이 아직 안 됐어요. 대표가 설정에서 웹훅 주소를 한 번 넣어 주면 그 뒤로는 버튼 하나로 올라갑니다.
-  <div class="row" style="margin-top:8px"><input id="hook" placeholder="https://hooks.slack.com/services/…"><button class="btn ghost" id="savehook">저장</button></div>
 </div>
 
 <div id="list"></div>
@@ -118,9 +115,8 @@ const state={store:"본점",round:"1차 13:30",who:"",note:"",cat:"자주 추가
 const KEY="simin-order";
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)Object.assign(state,s,{q:""});}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}};
-// 슬랙 #물량 Incoming Webhook 주소. 여기에 넣으면 모든 매장 폰에서 바로 동작한다.
-const HOOK_DEFAULT="";
-let HOOK=HOOK_DEFAULT;if(!HOOK){try{HOOK=localStorage.getItem("simin-order-hook")||"";}catch(e){}}
+// 슬랙 게시는 같은 사이트의 /api/slack 가 중계한다 (웹훅 주소는 서버 환경변수).
+const POST_URL="/api/slack";
 
 function seg(id,key){const el=$(id);el.querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.v===state[key]));b.onclick=()=>{state[key]=b.dataset.v;el.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));render();};});}
 seg("#store","store");seg("#round","round");
@@ -160,18 +156,16 @@ function render(){
   const m=message();
   $("#preview").textContent=m||"제품을 골라 수량을 넣으면 여기에 미리 보여요.";
   $("#send").disabled=!m;
-  $("#setup").hidden=!!HOOK;
   save();
 }
-$("#savehook").onclick=()=>{const v=$("#hook").value.trim();if(!v.startsWith("https://hooks.slack.com/"))return toast("hooks.slack.com 으로 시작하는 주소여야 해요","err");HOOK=v;try{localStorage.setItem("simin-order-hook",v);}catch(e){}toast("연결됐어요","ok");render();};
 function toast(t,c){const el=$("#toast");el.textContent=t;el.className="toast "+(c||"");if(c==="ok")setTimeout(()=>{el.textContent="";},3000);}
 $("#send").onclick=async()=>{
   const m=message();if(!m)return;
-  if(!HOOK){$("#setup").hidden=false;$("#setup").scrollIntoView({behavior:"smooth"});return toast("슬랙 연결이 필요해요","err");}
   $("#send").disabled=true;toast("올리는 중…");
   try{
-    // no-cors: Slack webhook accepts the post but the browser can't read the reply. Treat no network error as success.
-    await fetch(HOOK,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:JSON.stringify({text:m})});
+    const r=await fetch(POST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:m})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.ok)throw new Error(j.error||r.status);
     toast("#물량에 올렸어요","ok");
     state.items={};state.note="";$("#note").value="";buildList();render();
   }catch(e){toast("올리지 못했어요. 복사해서 직접 붙여 넣어 주세요","err");$("#send").disabled=false;}
