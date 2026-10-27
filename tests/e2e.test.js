@@ -272,8 +272,8 @@ function backends() {
     await m.click('.back-btn');
   });
 
-  await step('부장: 비밀번호가 틀리면 못 들어가고, 맞으면 들어간다', async () => {
-    await m.click('button:has-text("부장")');
+  await step('생산총괄: 비밀번호가 틀리면 못 들어가고, 맞으면 들어간다', async () => {
+    await m.click('button:has-text("생산총괄")');
     await m.waitForSelector('#pinSheet:not(.hidden)');
     await shot(m, '07-비밀번호');
     await m.fill('#pinInput', '0000');
@@ -300,14 +300,14 @@ function backends() {
     await m.fill('#num-s6-bang', '4');
     assert.ok(/1 \/ 13 완료/.test(await m.locator('#progressLabel').innerText()));
     await m.reload();
-    await m.click('button:has-text("부장")');                              // 같은 탭에서는 비밀번호를 다시 묻지 않음
+    await m.click('button:has-text("생산총괄")');                              // 같은 탭에서는 비밀번호를 다시 묻지 않음
     await m.waitForSelector('#card-s1.done');
     assert.strictEqual(await m.inputValue('#memo-s2'), '크로와상 12개 발효 과다');
     assert.strictEqual(await m.inputValue('#num-s6-bang'), '4');
     assert.ok(await m.locator('#sub-s4-sub1').evaluate(e => e.classList.contains('on')));
     assert.ok(/1 \/ 13 완료/.test(await m.locator('#progressLabel').innerText()));
     assert.ok(/중간 저장 \(★ 9개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
-    await shot(m, '08-부장-점검', true);
+    await shot(m, '08-생산총괄-점검', true);
   });
 
   await step('중간 저장 → 노션 "작성중", 전부 체크 후 저장 → 같은 기록을 "작성완료"로 고친다', async () => {

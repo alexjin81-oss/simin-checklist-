@@ -4,7 +4,7 @@
 // 2026-10 개정:
 //  - 재고: 하루 1행 덮어쓰기(날짜 비교 오류 수정), 품목명 정규화, 빈 행 방지
 //  - "어제 재고"는 오늘 이전의 실제 마지막 값만 사용
-//  - 리더 입력 현황(getStatus), 대표·부장 PIN 서버 확인
+//  - 리더 입력 현황(getStatus), 대표·생산총괄 PIN 서버 확인
 //  - 노션 토큰·PIN은 코드가 아니라 [프로젝트 설정 → 스크립트 속성]에 저장
 //      NOTION_TOKEN / CEO_PIN / SUPERVISOR_PIN
 //  - 노션 점검 기록은 하루 1건(같은 날 다시 저장하면 덮어쓰기)
@@ -118,7 +118,7 @@ function ensureColumns(sh, count) {
 }
 
 // ============================================
-// PIN (대표 / 부장)
+// PIN (대표 / 생산총괄)
 // ============================================
 function pinState(role, pin) {
   const key = PIN_KEYS[role];
@@ -143,7 +143,7 @@ function checkPin(req) {
 }
 
 // ============================================
-// 1) 부장 일일 점검 → 노션 저장 (하루 1건)
+// 1) 생산총괄 일일 점검 → 노션 저장 (하루 1건)
 // ============================================
 function saveSupervisor(req) {
   const auth = pinState('supervisor', req.pin);
@@ -157,7 +157,7 @@ function saveSupervisor(req) {
   const isDraft = d.status === 'draft';
 
   const props = {
-    '날짜':            { title: [{ text: { content: today + ' 부장 점검' } }] },
+    '날짜':            { title: [{ text: { content: today + ' 생산총괄 점검' } }] },
     '작성일':          { date: { start: today } },
     '조회 진행':       { checkbox: !!d.s1 },
     '전날 폐기 확인':  { checkbox: !!d.s2 },

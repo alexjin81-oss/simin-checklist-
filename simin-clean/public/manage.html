@@ -115,7 +115,7 @@
     width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
     font-size: 14px; font-family: inherit; background: #fff; min-height: 60px; resize: vertical;
   }
-  /* 리더 작성 현황 (부장용) */
+  /* 리더 작성 현황 (생산총괄용) */
   .floor-status { display: flex; gap: 8px; margin-top: 12px; padding-left: 38px; }
   .floor-chip {
     flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px;
@@ -318,7 +318,7 @@
         <span class="emo">🧭</span>대표<span class="sub">지시사항 작성</span>
       </button>
       <button onclick="enterRole('supervisor')">
-        <span class="emo">📋</span>부장<span class="sub">일일 점검</span>
+        <span class="emo">📋</span>생산총괄<span class="sub">일일 점검</span>
       </button>
       <button onclick="enterRole('2F')" data-floor="2F">
         <span class="emo">🎂</span>2F 케이크실<span class="sub">재고 입력</span>
@@ -366,7 +366,7 @@
 // 데이터 정의
 // ============================================
 
-// 부장 일일 점검표
+// 생산총괄 일일 점검표
 const SUPERVISOR = [
   { id: 'am', title: '아침', ico: '🌅', time: '~09:00', items: [
     { id: 's1', label: '조회 진행', star: true,
@@ -567,12 +567,12 @@ const LEADER_INV = {
 
 const ROLE_INFO = {
   ceo:        { title: '대표 지시사항', emo: '🧭' },
-  supervisor: { title: '부장 일일 점검', emo: '📋' },
+  supervisor: { title: '생산총괄 일일 점검', emo: '📋' },
   '2F':       { title: '2F 케이크실 재고', emo: '🎂' },
   '3F':       { title: '3F 생산실 재고', emo: '🍞' },
   '4F':       { title: '4F 냉동생지 재고', emo: '❄️' }
 };
-const PIN_ROLES = { ceo: '대표', supervisor: '부장' };
+const PIN_ROLES = { ceo: '대표', supervisor: '생산총괄' };
 
 // ============================================
 // 서버 연동
@@ -649,8 +649,8 @@ function clearDraft(r) { try { localStorage.removeItem(draftKey(r)); } catch (e)
 // 상태
 // ============================================
 let role = null;
-let checkState = {};     // 부장 체크 상태
-let fieldState = {};     // 부장 메모·숫자 입력값 (요소 id → 값)
+let checkState = {};     // 생산총괄 체크 상태
+let fieldState = {};     // 생산총괄 메모·숫자 입력값 (요소 id → 값)
 let floorStatus = null;  // 층별 리더 재고 입력 현황
 let inv = {};            // 리더 재고: 품목키 → { v, mode, ack, warn }
 let invMeta = {};        // 리더 재고: 품목키 → { name, safe, prev, prevDate, prevIsYesterday }
@@ -658,7 +658,7 @@ let invLoaded = true;
 let ceoNotice = { text: '', date: '' };
 
 // ============================================
-// 비밀번호 (대표 / 부장) — 서버에서 확인
+// 비밀번호 (대표 / 생산총괄) — 서버에서 확인
 // ============================================
 function getPin(r) { try { return sessionStorage.getItem('simin_pin_' + r) || ''; } catch (e) { return ''; } }
 function setPin(r, pin) { try { pin ? sessionStorage.setItem('simin_pin_' + r, pin) : sessionStorage.removeItem('simin_pin_' + r); } catch (e) {} }
@@ -773,12 +773,12 @@ function renderCeoEdit() {
   $('sections').innerHTML = `<div class="ceo-edit">` +
     `<label for="ceoText">전 직원에게 보낼 지시사항</label>` +
     `<textarea id="ceoText" placeholder="예) 이번 주 토요일 예약이 많습니다. 2층 시트 재고 2배 준비.">${escapeHtml(ceoNotice.text)}</textarea>` +
-    `<div class="ceo-hint">저장하면 부장·층별 리더 화면 맨 위에 표시됩니다. 비우고 저장하면 지시사항이 사라집니다.</div>` +
+    `<div class="ceo-hint">저장하면 생산총괄·층별 리더 화면 맨 위에 표시됩니다. 비우고 저장하면 지시사항이 사라집니다.</div>` +
     `</div>`;
 }
 
 // ============================================
-// 부장 화면
+// 생산총괄 화면
 // ============================================
 function supervisorItems() { return SUPERVISOR.flatMap(s => s.items); }
 function persistSupervisor() { saveDraft('supervisor', { checkState: checkState, fieldState: fieldState }); }
@@ -1160,7 +1160,7 @@ async function submitForm() {
     return;
   }
 
-  // ── 부장: 일일 점검 → 노션 (하루 1건, 다시 저장하면 덮어쓰기) ──
+  // ── 생산총괄: 일일 점검 → 노션 (하루 1건, 다시 저장하면 덮어쓰기) ──
   if (role === 'supervisor') {
     const items = supervisorItems();
     const missing = items.filter(i => i.star && !checkState[i.id]).length;
