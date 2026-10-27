@@ -43,7 +43,25 @@ export async function POST(request) {
     }));
   if (!clean.length) return NextResponse.json({ ok: false, error: 'no rows' }, { status: 400 });
 
-  const result = { ok: true, notion: false, slack: false, errors: [] };
+  const result = { ok: true, notion: false, slack: false, sheet: false, errors: [] };
+
+  // 구글시트 (apps-script/loss-sheet.gs 웹앱) — 일일 매출표 작성용 원본
+  const sheetUrl = process.env.LOSS_SHEET_URL;
+  if (sheetUrl) {
+    try {
+      const r = await fetch(sheetUrl, {
+        method: 'POST', redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },  // GAS는 text/plain 이어야 CORS 프리플라이트 없이 받음
+        body: JSON.stringify({ date, store, writer: String(writer).slice(0, 50), memo: String(memo).slice(0, 500), rows: clean }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) throw new Error(j.error || ('sheet ' + r.status));
+      result.sheet = true;
+    } catch (e) {
+      console.error('sheet', e);
+      result.errors.push('sheet: ' + (e.message || e));
+    }
+  } else result.errors.push('sheet: LOSS_SHEET_URL not set');
 
   const notion = notionClient();
   if (notion) {
@@ -85,6 +103,6 @@ export async function POST(request) {
     }
   }
 
-  result.ok = result.notion || result.slack;
+  result.ok = result.notion || result.slack || result.sheet;
   return NextResponse.json(result, { status: result.ok ? 200 : 502 });
 }

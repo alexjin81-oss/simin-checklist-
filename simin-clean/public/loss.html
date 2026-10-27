@@ -267,7 +267,8 @@ $("#rvYes").onclick=async()=>{
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok)throw new Error((j.errors||[]).join(", ")||j.error||r.status);
     $("#modal").classList.remove("show");
-    toast(j.notion&&j.slack?"등록 완료 — 노션 표와 #물량에 올라갔어요":j.notion?"노션 표에 저장됐어요 (슬랙은 못 올림)":"#물량에 올렸어요 (노션 저장은 실패 — 사무실에 알려 주세요)",j.notion?"ok":"err");
+    const saved=(j.sheet||j.notion), miss=[!j.sheet&&"시트",!j.notion&&"노션",!j.slack&&"#물량"].filter(Boolean);
+    toast(miss.length?`등록됐지만 ${miss.join("·")}에는 못 올렸어요 — 사무실에 알려 주세요`:"등록 완료 — 시트·노션에 저장되고 #물량에 올라갔어요",saved?"ok":"err");
     state.qty={};state.disp={};state.custom=[];state.note="";$("#note").value="";state.date=today();$("#date").value=state.date;build();
   }catch(e){toast("등록하지 못했어요. '복사'로 복사해서 #물량에 직접 붙여 주세요 ("+e.message+")","err");}
   btn.disabled=false;btn.textContent="등록";
