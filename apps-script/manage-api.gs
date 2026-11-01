@@ -9,7 +9,7 @@
 //      NOTION_TOKEN / CEO_PIN / SUPERVISOR_PIN
 //  - 노션 점검 기록은 하루 1건(같은 날 다시 저장하면 덮어쓰기)
 // ============================================
-const NOTION_DB_ID = '6369a579-c16c-40b0-8221-0a06d6f32e6c';
+const NOTION_DB_ID = 'ef3c3fba-057b-4a79-afbf-b23bfca555a3';  // 표(database) ID — 6369a579…는 data source ID라 API가 못 찾음
 const SHEET_ID = '12-doLOFJP45u1I9BzrAv4i1Eps1H_p5W1COvtAVygqM';
 const NOTION_VERSION = '2022-06-28';
 const TZ = 'Asia/Seoul';
