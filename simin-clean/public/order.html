@@ -20,7 +20,7 @@
 *{box-sizing:border-box}
 html{scroll-padding-top:120px}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;padding-top:env(safe-area-inset-top,0)}
-.wrap{max-width:640px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left)) 160px max(16px,env(safe-area-inset-right))}
+.wrap{max-width:640px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left)) calc(var(--outh,220px) + 24px) max(16px,env(safe-area-inset-right))}
 header{position:sticky;top:env(safe-area-inset-top,0);background:var(--bg);z-index:5;padding:12px 0 10px;border-bottom:1px solid var(--line)}
 h1{font-size:17px;margin:0 0 10px;font-weight:700}
 h1 small{color:var(--muted);font-weight:500;font-size:12px;margin-left:8px}
@@ -45,7 +45,7 @@ input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:
 .empty{color:var(--muted);font-size:13px;padding:12px 0}
 .out{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom,0)) max(16px,env(safe-area-inset-right));z-index:6}
 .out .in{max-width:640px;margin:0 auto}
-.out pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 8px;white-space:pre-wrap;word-break:break-word;font:13px/1.5 var(--mono);max-height:22vh;overflow:auto}
+.out pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 8px;white-space:pre-wrap;word-break:break-word;font:13px/1.5 var(--mono);max-height:16vh;overflow:auto}
 .act{display:flex;gap:8px;align-items:center}
 .btn{border:0;background:var(--accent);color:var(--accent-fg);padding:11px 18px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;flex:1}
 .btn:disabled{opacity:.5;cursor:default}
@@ -79,8 +79,6 @@ input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:
   <div class="cats" id="cats" role="tablist"></div>
   <input class="search" id="q" placeholder="제품 검색" aria-label="제품 검색">
 </header>
-
-</div>
 
 <div id="list"></div>
 </div>
@@ -173,6 +171,8 @@ $("#send").onclick=async()=>{
 $("#copy").onclick=async()=>{const m=message();if(!m)return;try{await navigator.clipboard.writeText(m);toast("복사됐어요","ok");}catch(e){toast("복사가 안 돼요","err");}};
 $("#reset").onclick=()=>{state.items={};state.note="";$("#note").value="";buildList();render();};
 buildList();render();
+// 하단 고정 바 높이만큼 본문 아래 여백 확보 (안 그러면 마지막 제품들이 바에 가려 못 누름)
+(function(){const o=document.querySelector('.out');if(!o)return;const set=()=>document.documentElement.style.setProperty('--outh',o.offsetHeight+'px');set();if(window.ResizeObserver)new ResizeObserver(set).observe(o);window.addEventListener('resize',set);})();
 </script>
 </body>
 </html>
