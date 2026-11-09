@@ -28,7 +28,7 @@ h1 small{color:var(--muted);font-weight:500;font-size:12px;margin-left:8px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row>*{min-width:0}
 .seg{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;flex:1}
-.seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 6px;border-radius:7px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 4px;font-size:14px;border-radius:7px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
 input,select{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:38px;width:100%}
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -88,6 +88,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);ou
       <button aria-pressed="true" data-v="본점">본점</button>
       <button aria-pressed="false" data-v="효자강변점">효자</button>
       <button aria-pressed="false" data-v="롯데점">롯데</button>
+      <button aria-pressed="false" data-v="포항역">포항역</button>
     </div>
   </div>
   <div class="row" style="margin-top:8px">
@@ -135,7 +136,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);ou
 
 <script>
 // 품목 카탈로그 — 2026-06 본점 마감 재고리스트 + 직원 손글씨 상시 품목. c:구분 p:기부단가 u:단위
-// 효자·롯데는 아직 자체 목록이 없어 본점 목록을 같이 쓴다(효자이관 묶음만 본점 전용).
+// 효자·롯데·포항역은 아직 자체 목록이 없어 본점 목록을 같이 쓴다(효자이관 묶음만 본점 전용).
 const ITEMS=[
  // 기부 (단가 有 → 손실액 자동)
  {n:"찹쌀도너츠",c:"기부",p:2000},{n:"팥도너츠",c:"기부",p:2200},{n:"꽈베기",c:"기부",p:2200},{n:"츄러스",c:"기부",p:3900},
