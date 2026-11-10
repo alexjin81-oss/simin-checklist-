@@ -293,19 +293,24 @@ function backends() {
     assert.ok(/2F 미작성/.test(t) && /3F 5\/24/.test(t) && /4F 미작성/.test(t), t);
   });
 
-  await step('체크·메모가 새로고침 후에도 남고, 진행률은 13개 기준으로 센다', async () => {
+  await step('체크·메모가 새로고침 후에도 남고, 진행률은 11개 기준으로 센다 (자재 잔량·사전예약은 숨김)', async () => {
     await m.click('#card-s1 .check-row');
     await m.click('#sub-s4-sub0'); await m.click('#sub-s4-sub1');
     await m.fill('#memo-s2', '크로와상 12개 발효 과다');
-    await m.fill('#num-s6-bang', '4');
-    assert.ok(/1 \/ 13 완료/.test(await m.locator('#progressLabel').innerText()));
+    assert.strictEqual(await m.locator('#card-s6, #card-s8').count(), 0);
+    await m.click('#sub-sq-sub0');
+    await m.fill('#qExtraInput', '크로와상'); await m.click('.qx-add button');
+    await m.fill('#qExtraInput', '플로랑탱'); await m.press('#qExtraInput', 'Enter');
+    await m.click('#qExtraList .subcheck:nth-child(2)');                       // 플로랑탱은 미확인으로 돌려 둔다
+    assert.ok(/1 \/ 11 완료/.test(await m.locator('#progressLabel').innerText()));
     await m.reload();
     await m.click('button:has-text("생산총괄")');                              // 같은 탭에서는 비밀번호를 다시 묻지 않음
     await m.waitForSelector('#card-s1.done');
     assert.strictEqual(await m.inputValue('#memo-s2'), '크로와상 12개 발효 과다');
-    assert.strictEqual(await m.inputValue('#num-s6-bang'), '4');
+    assert.ok(await m.locator('#qExtraList .subcheck:nth-child(1)').evaluate(e => e.classList.contains('on')));
+    assert.ok(await m.locator('#qExtraList .subcheck:nth-child(2)').evaluate(e => !e.classList.contains('on')));
     assert.ok(await m.locator('#sub-s4-sub1').evaluate(e => e.classList.contains('on')));
-    assert.ok(/1 \/ 13 완료/.test(await m.locator('#progressLabel').innerText()));
+    assert.ok(/1 \/ 11 완료/.test(await m.locator('#progressLabel').innerText()));
     assert.ok(/중간 저장 \(★ 9개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
     await shot(m, '08-생산총괄-점검', true);
   });
@@ -320,10 +325,14 @@ function backends() {
     assert.strictEqual(props['상태'].select.name, '📝 작성중');
     assert.strictEqual(props['조회 진행'].checkbox, true);
     assert.strictEqual(props['3F 워크인 확인'].checkbox, true);
-    assert.strictEqual(props['빵앙금(박스)'].number, 4);
+    assert.strictEqual(props['빵앙금(박스)'].number, null);
+    assert.ok(/확인: 단팥빵, 크로와상/.test(props['품질 확인 메모'].rich_text[0].text.content) && /미확인: .*플로랑탱/.test(props['품질 확인 메모'].rich_text[0].text.content), props['품질 확인 메모'].rich_text[0].text.content);
     assert.strictEqual(props['폐기 메모'].rich_text[0].text.content, '크로와상 12개 발효 과다');
 
-    for (const id of ['s2', 's3', 's4', 's5', 'sq', 's6', 's7', 'shyg', 's9']) await m.click('#card-' + id + ' .check-row');
+    for (const id of ['s2', 's3', 's4', 's5', 'sq', 's7', 'shyg', 's9']) await m.click('#card-' + id + ' .check-row');
+    await m.click('#card-s11 .check-row');                                      // 코멘트는 체크만으로 완료되지 않는다
+    assert.ok(/중간 저장 \(★ 1개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
+    await m.fill('#memo-s11', '귤 케이크 색 양호');
     assert.ok(/점검 완료 저장/.test(await m.locator('#submitBtn').innerText()));
     await m.click('#submitBtn');
     await m.waitForFunction(() => /오늘 점검을 저장/.test(document.getElementById('toast').textContent));

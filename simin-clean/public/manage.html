@@ -111,6 +111,21 @@
     font-size: 12px; color: #fff;
   }
   .subcheck.on .sbox { background: var(--ok); border-color: var(--ok); }
+  .subcheck span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .qx-del {
+    flex-shrink: 0; width: 28px; height: 28px; margin: -4px -5px -4px 0; border: 0; border-radius: 7px;
+    background: transparent; color: var(--sub); font-size: 18px; line-height: 1; cursor: pointer; font-family: inherit;
+  }
+  .qx-del:hover, .qx-del:focus-visible { background: rgba(0,0,0,.07); }
+  .qx-add { display: flex; gap: 6px; margin-top: 2px; }
+  .qx-add input {
+    flex: 1; min-width: 0; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px;
+    font-size: 14px; font-family: inherit; background: #fff;
+  }
+  .qx-add button {
+    flex-shrink: 0; padding: 0 14px; border: 1px solid var(--line); border-radius: 9px;
+    background: #fff; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+  }
   .memo-box textarea {
     width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
     font-size: 14px; font-family: inherit; background: #fff; min-height: 60px; resize: vertical;
@@ -389,10 +404,12 @@ const SUPERVISOR = [
       checks: ['워크인 냉동고 ① 정리·재고 확인', '워크인 냉동고 ② 정리·재고 확인'],
       memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
     { id: 'sq', label: '주요 제품 품질 확인', star: true,
-      hint: '오전 11시경 · 당일 핵심 제품 맛·상태 직접 확인',
+      hint: '오전 11시경 · 당일 핵심 제품 맛·상태 직접 확인 · 오늘 본 제품을 누르고, 목록에 없으면 추가',
       checks: ['단팥빵', '찹쌀떡', '소금빵', '포항 마들렌', '효자 생산 제품'],
-      memo: '추가 확인 제품 · 이상 발견 시 (선택)' },
-    { id: 's6', label: '핵심 자재 잔량', star: true,
+      extra: true,
+      memo: '이상 발견 시 (선택)' },
+    // 숨김(2026-11): 화면·진행률에서 빼 둔다. 다시 쓰려면 hidden 만 지운다.
+    { id: 's6', label: '핵심 자재 잔량', star: true, hidden: true,
       hint: '떨어지기 전 발주',
       nums: [
         { k: 'bang', label: '빵앙금(박스)' }, { k: 'ddeok', label: '떡앙금(박스)' },
@@ -406,7 +423,7 @@ const SUPERVISOR = [
     { id: 'shyg', label: '공장 전체 위생 점검', star: true,
       hint: '나방파리 · 바닥·트렌치 · 작업대 · 여름철 식자재 냉장',
       memo: '오늘 본 위생 이슈 (선택)' },
-    { id: 's8', label: '사전예약 수량 확인',
+    { id: 's8', label: '사전예약 수량 확인', hidden: true,
       hint: '시즌 예약 반영 여부',
       nums: [{ k: 'preorder', label: '예약 수량' }],
       memo: '⭐ 중요·대량 예약건 (날짜 · 품목 · 수량)\n예) 6/20 단체케이크 50개 / 6/25 답례품 찹쌀떡 300개' },
@@ -416,9 +433,9 @@ const SUPERVISOR = [
       hint: '3층 생산판 · 4층 주간 캘린더 · 사전예약 반영' },
     { id: 's10', label: '효자점 마감 확인',
       hint: '효자점 그날 기록 입력 · 폐기 여부' },
-    { id: 's11', label: '오늘 코멘트',
-      hint: '오늘의 이슈 정리 (선택)',
-      memo: '자유 기록' },
+    { id: 's11', label: '오늘 코멘트', star: true, needText: true,
+      hint: '오늘의 이슈 한 줄 이상 · 대표에게 가는 일일 보고입니다',
+      memo: '오늘 있었던 일 · 결정이 필요한 것' },
   ]},
 ];
 
@@ -780,7 +797,47 @@ function renderCeoEdit() {
 // ============================================
 // 생산총괄 화면
 // ============================================
-function supervisorItems() { return SUPERVISOR.flatMap(s => s.items); }
+function supervisorItems() { return SUPERVISOR.flatMap(s => s.items).filter(i => !i.hidden); }
+
+// 품질 확인에 직접 추가한 제품 — 이 기기에 계속 남는다 (다음 날에도 목록에 보임)
+const QEXTRA_KEY = 'simin_qextra_v1';
+function loadQExtra() {
+  try { const a = JSON.parse(localStorage.getItem(QEXTRA_KEY) || '[]'); return Array.isArray(a) ? a.filter(x => typeof x === 'string' && x) : []; }
+  catch (e) { return []; }
+}
+function saveQExtra(list) { try { localStorage.setItem(QEXTRA_KEY, JSON.stringify(list)); } catch (e) {} }
+function qExtraHtml() {
+  return loadQExtra().map((name, i) =>
+    `<div class="subcheck${checkState['qx-' + name] ? ' on' : ''}" onclick="toggleQExtra(${i})">` +
+    `<div class="sbox">✓</div><span>${escapeHtml(name)}</span>` +
+    `<button type="button" class="qx-del" aria-label="${escapeHtml(name)} 목록에서 빼기" onclick="removeQExtra(event, ${i})">×</button></div>`
+  ).join('');
+}
+function renderQExtra() { const el = $('qExtraList'); if (el) el.innerHTML = qExtraHtml(); }
+function toggleQExtra(i) {
+  const name = loadQExtra()[i]; if (!name) return;
+  checkState['qx-' + name] = !checkState['qx-' + name];
+  persistSupervisor(); renderQExtra();
+}
+function addQExtra() {
+  const inp = $('qExtraInput');
+  const name = inp.value.replace(/\s+/g, ' ').trim().slice(0, 30);
+  if (!name) { inp.focus(); return; }
+  const fixed = (SUPERVISOR.flatMap(s => s.items).find(i => i.id === 'sq') || {}).checks || [];
+  const list = loadQExtra();
+  if (fixed.indexOf(name) >= 0 || list.indexOf(name) >= 0) { toast('이미 목록에 있는 제품입니다', true); return; }
+  list.push(name); saveQExtra(list);
+  checkState['qx-' + name] = true;          // 방금 추가한 제품은 확인한 것으로 표시
+  persistSupervisor(); renderQExtra();
+  inp.value = ''; inp.focus();
+}
+function removeQExtra(e, i) {
+  if (e) e.stopPropagation();
+  const list = loadQExtra(); const name = list[i]; if (!name) return;
+  list.splice(i, 1); saveQExtra(list);
+  delete checkState['qx-' + name];
+  persistSupervisor(); renderQExtra();
+}
 function persistSupervisor() { saveDraft('supervisor', { checkState: checkState, fieldState: fieldState }); }
 
 function renderSupervisor() {
@@ -792,7 +849,7 @@ function renderSupervisor() {
     let html = `<div class="section-head"><span class="ico">${sec.ico}</span>` +
       `<span class="title">${sec.title}</span>` +
       (sec.time ? `<span class="time">${sec.time}</span>` : '') + `</div>`;
-    sec.items.forEach(it => {
+    sec.items.filter(it => !it.hidden).forEach(it => {
       html += `<div class="check-card${checkState[it.id] ? ' done' : ''}" id="card-${it.id}">`;
       html += `<div class="check-row" onclick="toggleCheck('${it.id}')">`;
       html += `<div class="checkbox">✓</div>`;
@@ -808,6 +865,12 @@ function renderSupervisor() {
           html += `<div class="subcheck${checkState['sub-' + sid] ? ' on' : ''}" id="sub-${sid}" onclick="toggleSub(event, '${sid}')">` +
             `<div class="sbox">✓</div><span>${label}</span></div>`;
         });
+        if (it.extra) {
+          html += `<div id="qExtraList">${qExtraHtml()}</div>` +
+            `<div class="qx-add"><input type="text" id="qExtraInput" maxlength="30" placeholder="제품 추가 (예: 크로와상)" ` +
+            `aria-label="확인한 제품 추가" onkeydown="if(event.key==='Enter'){event.preventDefault();addQExtra();}">` +
+            `<button type="button" onclick="addQExtra()">추가</button></div>`;
+        }
         html += `</div>`;
       }
       // 숫자 입력
@@ -840,10 +903,19 @@ function renderSupervisor() {
 
 function onField(el) {
   fieldState[el.id] = el.value;
+  // 글을 써야 완료되는 항목(오늘 코멘트): 내용이 있으면 체크, 지우면 해제
+  const it = el.id.indexOf('memo-') === 0 ? supervisorItems().find(i => i.needText && i.id === el.id.slice(5)) : null;
+  if (it) {
+    checkState[it.id] = el.value.trim().length > 0;
+    $('card-' + it.id).classList.toggle('done', checkState[it.id]);
+    updateProgress();
+  }
   persistSupervisor();
 }
 
 function toggleCheck(id) {
+  const it = supervisorItems().find(i => i.id === id);
+  if (it && it.needText) { const ta = $('memo-' + id); if (ta) ta.focus(); return; }   // 체크만으로는 완료되지 않는다
   checkState[id] = !checkState[id];
   $('card-' + id).classList.toggle('done', checkState[id]);
   persistSupervisor();
@@ -1168,8 +1240,9 @@ async function submitForm() {
 
     const qItem = items.find(i => i.id === 'sq');
     const qLabels = qItem ? qItem.checks : [];
-    const qChecked = qLabels.filter((_, i) => checkState['sub-sq-sub' + i]);
-    const qMissing = qLabels.filter((_, i) => !checkState['sub-sq-sub' + i]);
+    const qExtra = loadQExtra();
+    const qChecked = qLabels.filter((_, i) => checkState['sub-sq-sub' + i]).concat(qExtra.filter(n => checkState['qx-' + n]));
+    const qMissing = qLabels.filter((_, i) => !checkState['sub-sq-sub' + i]).concat(qExtra.filter(n => !checkState['qx-' + n]));
     let qualityText = qChecked.length ? '확인: ' + qChecked.join(', ') : '';
     if (qMissing.length) qualityText += (qualityText ? ' / ' : '') + '미확인: ' + qMissing.join(', ');
     const qmemo = g('memo-sq');

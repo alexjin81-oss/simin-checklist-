@@ -198,7 +198,7 @@ test('점검 저장: 오늘 기록이 없으면 새로 만들고, 있으면 그 
   let last = env.fetchLog[env.fetchLog.length - 1];
   assert.strictEqual(last.opt.method, 'post'); assert.ok(/\/v1\/pages$/.test(last.url));
   let body = JSON.parse(last.opt.payload);
-  assert.strictEqual(body.parent.database_id, '6369a579-c16c-40b0-8221-0a06d6f32e6c');
+  assert.strictEqual(body.parent.database_id, 'ef3c3fba-057b-4a79-afbf-b23bfca555a3');
   assert.strictEqual(body.properties['상태'].select.name, '📝 작성중');
   assert.strictEqual(body.properties['빵앙금(박스)'].number, 4);
   assert.strictEqual(body.properties['작성일'].date.start, '2026-10-09');
