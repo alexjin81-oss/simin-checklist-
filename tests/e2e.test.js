@@ -185,7 +185,7 @@ function backends() {
   console.log('관리 화면');
   const s3 = be.manage.ss.sheets['재고_3F'];
   let m = await newPage();
-  await m.goto(base + '/manage.html');
+  await m.goto(base + '/manage.html?dow=6');   // 토요일 화면(워크인 주간 점검 포함)으로 본다
   await shot(m, '04-관리-역할선택');
 
   await step('3F 재고: 칸은 비어 있고 어제 값은 참고로만 보인다 (예시 숫자 없음)', async () => {
@@ -287,13 +287,11 @@ function backends() {
     assert.ok(!src.includes('4826') && !src.includes("'2024'"), '화면 코드에 비밀번호가 없어야 함');
   });
 
-  await step('리더 입력 현황이 실제 저장 상태를 보여준다', async () => {
-    await m.waitForFunction(() => /3F/.test(document.getElementById('floorStatus').textContent) && !/확인 중/.test(document.getElementById('floorStatus').textContent));
-    const t = await m.locator('#floorStatus').innerText();
-    assert.ok(/2F 미작성/.test(t) && /3F 5\/24/.test(t) && /4F 미작성/.test(t), t);
+  await step('리더 재고 보고 검수 항목은 보이지 않는다 (라운딩에 포함)', async () => {
+    assert.strictEqual(await m.locator('#card-s7, #floorStatus').count(), 0);
   });
 
-  await step('체크·메모가 새로고침 후에도 남고, 진행률은 11개 기준으로 센다 (자재 잔량·사전예약은 숨김)', async () => {
+  await step('체크·메모가 새로고침 후에도 남고, 진행률은 10개 기준으로 센다 (자재 잔량·사전예약·리더 재고 검수는 숨김)', async () => {
     await m.click('#card-s1 .check-row');
     await m.click('#sub-s4-sub0'); await m.click('#sub-s4-sub1');
     await m.fill('#memo-s2', '크로와상 12개 발효 과다');
@@ -302,7 +300,7 @@ function backends() {
     await m.fill('#qExtraInput', '크로와상'); await m.click('.qx-add button');
     await m.fill('#qExtraInput', '플로랑탱'); await m.press('#qExtraInput', 'Enter');
     await m.click('#qExtraList .subcheck:nth-child(2)');                       // 플로랑탱은 미확인으로 돌려 둔다
-    assert.ok(/1 \/ 11 완료/.test(await m.locator('#progressLabel').innerText()));
+    assert.ok(/1 \/ 10 완료/.test(await m.locator('#progressLabel').innerText()));
     await m.reload();
     await m.click('button:has-text("생산총괄")');                              // 같은 탭에서는 비밀번호를 다시 묻지 않음
     await m.waitForSelector('#card-s1.done');
@@ -310,8 +308,8 @@ function backends() {
     assert.ok(await m.locator('#qExtraList .subcheck:nth-child(1)').evaluate(e => e.classList.contains('on')));
     assert.ok(await m.locator('#qExtraList .subcheck:nth-child(2)').evaluate(e => !e.classList.contains('on')));
     assert.ok(await m.locator('#sub-s4-sub1').evaluate(e => e.classList.contains('on')));
-    assert.ok(/1 \/ 11 완료/.test(await m.locator('#progressLabel').innerText()));
-    assert.ok(/중간 저장 \(★ 9개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
+    assert.ok(/1 \/ 10 완료/.test(await m.locator('#progressLabel').innerText()));
+    assert.ok(/중간 저장 \(★ 8개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
     await shot(m, '08-생산총괄-점검', true);
   });
 
@@ -329,7 +327,7 @@ function backends() {
     assert.ok(/확인: 단팥빵, 크로와상/.test(props['품질 확인 메모'].rich_text[0].text.content) && /미확인: .*플로랑탱/.test(props['품질 확인 메모'].rich_text[0].text.content), props['품질 확인 메모'].rich_text[0].text.content);
     assert.strictEqual(props['폐기 메모'].rich_text[0].text.content, '크로와상 12개 발효 과다');
 
-    for (const id of ['s2', 's3', 's4', 's5', 'sq', 's7', 'shyg', 's9']) await m.click('#card-' + id + ' .check-row');
+    for (const id of ['s2', 's3', 's4', 's5', 'sq', 'shyg', 's9']) await m.click('#card-' + id + ' .check-row');
     await m.click('#card-s11 .check-row');                                      // 코멘트는 체크만으로 완료되지 않는다
     assert.ok(/중간 저장 \(★ 1개 남음\)/.test(await m.locator('#submitBtn').innerText()), await m.locator('#submitBtn').innerText());
     await m.fill('#memo-s11', '귤 케이크 색 양호');
@@ -339,6 +337,18 @@ function backends() {
     last = log[log.length - 1];
     assert.strictEqual(last.opt.method, 'patch'); assert.ok(/pages\/page-1$/.test(last.url));
     assert.strictEqual(JSON.parse(last.opt.payload).properties['상태'].select.name, '✅ 작성완료');
+    await m.click('.back-btn');
+  });
+
+  await step('평일에는 워크인 체크가 보이지 않고, 메모 칸만 남는다', async () => {
+    await m.goto(base + '/manage.html?dow=5');
+    await m.click('button:has-text("생산총괄")');
+    await m.waitForSelector('#card-s4');
+    assert.strictEqual(await m.locator('#sub-s3-sub0, #sub-s4-sub0, #sub-s5-sub0, .weekly-tag').count(), 0);
+    assert.ok(/워크인 점검은 토요일/.test(await m.locator('#card-s4 .hint').innerText()));
+    assert.strictEqual(await m.locator('#sub-sq-sub0').count(), 1);            // 품질 확인 제품 체크는 매일
+    await noOverflow(m);
+    await shot(m, '08b-생산총괄-평일', true);
     await m.click('.back-btn');
   });
 

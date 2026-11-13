@@ -126,6 +126,7 @@
     flex-shrink: 0; padding: 0 14px; border: 1px solid var(--line); border-radius: 9px;
     background: #fff; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer;
   }
+  .weekly-tag { font-size: 12px; font-weight: 700; color: var(--sub); margin: 0 0 6px 2px; }
   .memo-box textarea {
     width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
     font-size: 14px; font-family: inherit; background: #fff; min-height: 60px; resize: vertical;
@@ -393,16 +394,13 @@ const SUPERVISOR = [
   { id: 'amround', title: '오전 라운딩', ico: '🥐', time: '~10:30', items: [
     { id: 's3', label: '2F 케이크실', star: true,
       hint: '직원 기록 · 당일 케이크 품질 · 사전예약 공유',
-      checks: ['워크인 냉동고(1) 정리·재고 확인'],
-      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+      weeklyDow: 6, checks: ['워크인 냉동고(1) 정리·재고 확인'] },
     { id: 's4', label: '3F 빵·떡', star: true,
       hint: '직원 기록 · 떡·바게트 진행',
-      checks: ['워크인 냉동고(1) 정리·재고 확인', '워크인 냉장고(1) 정리·재고 확인'],
-      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+      weeklyDow: 6, checks: ['워크인 냉동고(1) 정리·재고 확인', '워크인 냉장고(1) 정리·재고 확인'] },
     { id: 's5', label: '4F 냉동생지', star: true,
       hint: '직원 기록 · 반죽 해동 일지',
-      checks: ['워크인 냉동고 ① 정리·재고 확인', '워크인 냉동고 ② 정리·재고 확인'],
-      memo: '워크인 정리 필요·오래된 재고 발견 시 (선택)' },
+      weeklyDow: 6, checks: ['워크인 냉동고 ① 정리·재고 확인', '워크인 냉동고 ② 정리·재고 확인'] },
     { id: 'sq', label: '주요 제품 품질 확인', star: true,
       hint: '오전 11시경 · 당일 핵심 제품 맛·상태 직접 확인 · 오늘 본 제품을 누르고, 목록에 없으면 추가',
       checks: ['단팥빵', '찹쌀떡', '소금빵', '포항 마들렌', '효자 생산 제품'],
@@ -417,7 +415,8 @@ const SUPERVISOR = [
       ] },
   ]},
   { id: 'mid', title: '수시 · 작업 중', ico: '☀️', time: '', items: [
-    { id: 's7', label: '리더 재고 보고 검수', star: true,
+    // 숨김(2026-11-13): 층별 라운딩에서 함께 본다.
+    { id: 's7', label: '리더 재고 보고 검수', star: true, hidden: true,
       hint: '각 층 리더가 오늘 재고 입력했는지 확인',
       floors: true },
     { id: 'shyg', label: '공장 전체 위생 점검', star: true,
@@ -620,6 +619,13 @@ function kstDay(offsetDays) {
   };
 }
 $('dateLabel').textContent = kstDay(0).label;
+function kstDow() {
+  const q = new URLSearchParams(location.search).get('dow');
+  if (q !== null && /^[0-6]$/.test(q)) return Number(q);
+  return new Date(Date.now() + 9 * 3600 * 1000).getUTCDay();
+}
+// 워크인 정리·재고 확인처럼 주 1회만 하는 서브 체크: 그 요일에만 보인다
+function weeklyOn(it) { return it.weeklyDow === undefined || it.weeklyDow === kstDow(); }
 
 function escapeHtml(s) {
   if (s == null) return '';
@@ -751,7 +757,7 @@ async function enterRole(r) {
     renderSupervisor();
     $('progressWrap').classList.remove('hidden');
     updateProgress();
-    loadFloorStatus();
+    if (supervisorItems().some(i => i.floors)) loadFloorStatus();
   } else {
     renderNoticeBox();
     await loadInventory(r);
@@ -855,11 +861,14 @@ function renderSupervisor() {
       html += `<div class="checkbox">✓</div>`;
       html += `<div class="check-label"><div class="lbl">${it.label}` +
         (it.star ? `<span class="star" title="필수">★</span>` : '') + `</div>`;
-      if (it.hint) html += `<div class="hint">${it.hint}</div>`;
+      const hintText = (it.hint || '') + (it.weeklyDow !== undefined && !weeklyOn(it) ? ' · 워크인 점검은 ' + DAY_NAMES[it.weeklyDow] + '요일' : '');
+      if (hintText) html += `<div class="hint">${hintText}</div>`;
       html += `</div></div>`;
-      // 서브 체크 (워크인 등)
-      if (it.checks) {
+      // 서브 체크 (워크인 등) — 주 1회 항목은 해당 요일에만
+      const weekly = it.weeklyDow !== undefined;
+      if (it.checks && weeklyOn(it)) {
         html += `<div class="subchecks">`;
+        if (weekly) html += `<div class="weekly-tag">${DAY_NAMES[it.weeklyDow]}요일 주간 점검 · 워크인 정리와 오래된 재고</div>`;
         it.checks.forEach((label, idx) => {
           const sid = `${it.id}-sub${idx}`;
           html += `<div class="subcheck${checkState['sub-' + sid] ? ' on' : ''}" id="sub-${sid}" onclick="toggleSub(event, '${sid}')">` +
@@ -883,8 +892,11 @@ function renderSupervisor() {
         html += `</div>`;
       }
       // 메모
-      if (it.memo) {
-        html += `<div class="memo-box"><textarea id="memo-${it.id}" placeholder="${escapeHtml(it.memo)}" oninput="onField(this)"></textarea></div>`;
+      const memoText = weekly
+        ? (weeklyOn(it) ? '오래된 재고 품목 · 정리 필요한 곳 (선택)' : '이상 있을 때만 (선택)')
+        : it.memo;
+      if (memoText) {
+        html += `<div class="memo-box"><textarea id="memo-${it.id}" placeholder="${escapeHtml(memoText)}" oninput="onField(this)"></textarea></div>`;
       }
       // 층별 리더 재고 입력 현황 (실제 저장 여부)
       if (it.floors) {
